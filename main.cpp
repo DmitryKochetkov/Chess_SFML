@@ -58,6 +58,8 @@ int main() {
     float dx = 0, dy = 0;
     bool isMove = false;
 
+    int moved_piece = 0;
+
     while (window.isOpen())
     {
         Vector2i pos = Mouse::getPosition(window);
@@ -73,19 +75,22 @@ int main() {
                 if (event.key.code == Mouse::Left)
                     for (int i = 0; i < 32; i++) {
                         if (board[i].getGlobalBounds().contains(pos.x, pos.y)) {
-                            isMove = true;
+                            isMove = true; moved_piece = i;
                             dx = pos.x - board[i].getPosition().x;
                             dy = pos.y - board[i].getPosition().y;
                         }
-
-                        if (isMove) {board[i].setPosition(pos.x - dx, pos.y - dy);}
                     }
 
             if (event.type == Event::MouseButtonReleased)
                 if (event.key.code == Mouse::Left)
+                {
                     isMove = false;
+                    Vector2f p = board[moved_piece].getPosition() + Vector2f(size/2 - border, size/2 - border);
+                    Vector2f newPosition = Vector2f(size*int(p.x/size) + border, size*int(p.y/size) + border);
+                    board[moved_piece].setPosition(newPosition);
+                }
 
-            
+            if (isMove) board[moved_piece].setPosition(pos.x - dx, pos.y - dy);
         }
 
         window.clear();
