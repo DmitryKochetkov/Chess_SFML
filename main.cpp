@@ -1,24 +1,50 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 using namespace sf;
 
 class ChessHandler {
-    public:
+    private:
+
+    bool WhiteToMove = true;
 
     int posititon[8][8] = {
-        -1, -2, -3, -4, -5, -3, -2, -1,
-        -6, -6, -6, -6, -6, -6, -6, -6,
+        5, 4, 3, 2, 1, 3, 4, 5,
+        6, 6, 6, 6, 6, 6, 6, 6,
         0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0,
-        6, 6, 6, 6, 6, 6, 6, 6, 
-        1, 2, 3, 4, 5, 3, 2, 1
+        -6, -6, -6, -6, -6, -6, -6, -6, 
+        -5, -4, -3, -2, -1, -3, -4, -5
     };
+
+    // const std::string errors[3] = {
+    //     "Success",
+    //     "Check",
+    //     ""
+    // };
+    public:
+
+    int getCell(int i, int j) { return posititon[i][j]; }
+
+    // std::string getError(int error_code) {return errors[error_code];}
+
+    // bool move(char* str_move) {
+    //     try {
+    //         str_move[0]
+    //     }
+    //     catch 
+    // }
+
+    bool move(std::pair<int, int> start, std::pair<int, int> end) {
+        //if (CheckToWhite && WhiteToMove && unsafe_move) { return false; }
+        return false;
+    }
 };
 
 int size = 56;
-int border = 28; //TODO: set value
+int border = 28;
 ChessHandler game;
 Sprite board[32];
 
@@ -27,7 +53,7 @@ void loadPosition() {
     for (int i = 0; i < 8; i++)
         for (int j = 0; j < 8; j++)
         {
-            int piece_id = game.posititon[i][j];
+            int piece_id = game.getCell(i, j);
             if (piece_id != 0) {
                 int x = abs(piece_id) - 1;
                 int y = piece_id > 0 ? 1 : 0;
@@ -88,9 +114,17 @@ int main() {
                     Vector2f p = board[moved_piece].getPosition() + Vector2f(size/2 - border, size/2 - border);
                     Vector2f newPosition = Vector2f(size*int(p.x/size) + border, size*int(p.y/size) + border);
                     board[moved_piece].setPosition(newPosition);
+                    std::cout << "Moved piece is " << moved_piece << std::endl;
+                    
+                    //TODO: update board data
                 }
 
-            if (isMove) board[moved_piece].setPosition(pos.x - dx, pos.y - dy);
+            if (isMove) {
+                board[moved_piece].setPosition(pos.x - dx, pos.y - dy);
+                
+                
+            }
+            
         }
 
         window.clear();
