@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cstdlib>
 
 using namespace sf;
 
@@ -43,8 +44,10 @@ class ChessHandler {
     }
 };
 
+int border_size = 504;
 int size = 56;
-int border = 28;
+//int border = 28;
+int border = (border_size - size * 8) / 2;
 ChessHandler game;
 Sprite board[32];
 
@@ -66,7 +69,7 @@ void loadPosition() {
 
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(500, 500), "ChessSFML", sf::Style::Titlebar | sf::Style::Close);;
+    sf::RenderWindow window(sf::VideoMode(border_size, border_size), "ChessSFML", sf::Style::Titlebar | sf::Style::Close);;
     auto desktop = sf::VideoMode::getDesktopMode();
     window.setPosition(Vector2i(desktop.width/2 - window.getSize().x/2, desktop.height/2 - window.getSize().y/2));
 
@@ -86,6 +89,8 @@ int main() {
 
     int moved_piece = 0;
 
+    char move[4];
+
     while (window.isOpen())
     {
         Vector2i pos = Mouse::getPosition(window);
@@ -104,6 +109,9 @@ int main() {
                             isMove = true; moved_piece = i;
                             dx = pos.x - board[i].getPosition().x;
                             dy = pos.y - board[i].getPosition().y;
+
+                            move[0] = static_cast<int>('a') + (int) (board[moved_piece].getPosition().x / size);
+                            move[1] = std::to_string(8 - (int) (board[moved_piece].getPosition().y / size))[0];
                         }
                     }
 
@@ -111,10 +119,17 @@ int main() {
                 if (event.key.code == Mouse::Left)
                 {
                     isMove = false;
+
                     Vector2f p = board[moved_piece].getPosition() + Vector2f(size/2 - border, size/2 - border);
                     Vector2f newPosition = Vector2f(size*int(p.x/size) + border, size*int(p.y/size) + border);
                     board[moved_piece].setPosition(newPosition);
-                    std::cout << "Moved piece is " << moved_piece << std::endl;
+
+                    move[2] = static_cast<int>('a') + (int) (newPosition.x / size);
+                    move[3] = std::to_string(8 - (int) (newPosition.y / size))[0];
+
+                    std::cout << "White are trying move " << move << std::endl << std::endl;
+
+                    //TODO: if e4e4 throw exception
                     
                     //TODO: update board data
                 }
