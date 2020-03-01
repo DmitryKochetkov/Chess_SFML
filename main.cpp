@@ -128,8 +128,6 @@ int main() {
                     move[3] = std::to_string(8 - (int) (newPosition.y / size))[0];
 
                     std::cout << "White are trying move " << move << std::endl << std::endl;
-
-                    //TODO: if e4e4 throw exception
                     
                     //TODO: update board data
                 }
