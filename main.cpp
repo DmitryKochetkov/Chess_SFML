@@ -91,14 +91,8 @@ int main() {
                     std::cout << "Trying move " << move << std::endl;
                     std::cout << "Moved piece " << moved_piece << std::endl << std::endl;
 
-                    // if (game.move(move))
-                    //     board[moved_piece].setPosition(newPosition);
-                    // else loadPosition();
-
                     if (game.move(move))
                         board[moved_piece].setPosition(newPosition);
-
-                    //TODO: else board[moved_piece].setPosition(oldPosition);
 
                     loadPosition();
 
@@ -106,7 +100,6 @@ int main() {
                 }
 
             if (isMove) {
-                //todo
                 board[moved_piece].setPosition(pos.x - dx, pos.y - dy);
             }
             
