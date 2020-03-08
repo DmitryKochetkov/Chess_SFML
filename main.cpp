@@ -13,17 +13,17 @@ Sprite board[32];
 
 void loadPosition() {
     int k = 0;
-    //for (int i = 0; i < 8; i++)
-    for (int i = 7; i >= 0; i--)
+    for (int i = 0; i < 8; i++)
+    //for (int i = 7; i >= 0; i--)
         for (int j = 0; j < 8; j++)
         //for (int j = 7; j >= 0; j--)
         {
             int piece_id = game.get_cell(i, j);
             if (piece_id != 0) {
                 int x = abs(piece_id) - 1;
-                int y = piece_id > 0 ? 1 : 0; //TODO: check
+                int y = piece_id > 0 ? 0 : 1;
                 board[k].setTextureRect(IntRect(field_size*x, field_size*y, field_size, field_size));
-                board[k].setPosition(field_size*j + border, field_size*i + border);
+                board[k].setPosition(field_size*j + border, field_size*(7-i) + border);
                 k++;
             }
         }
@@ -97,6 +97,7 @@ int main() {
 
                     if (game.move(move))
                         board[moved_piece].setPosition(newPosition);
+
                     //TODO: else board[moved_piece].setPosition(oldPosition);
 
                     loadPosition();
