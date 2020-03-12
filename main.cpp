@@ -32,6 +32,8 @@ void loadPosition() {
 
 
 int main() {
+    //TODO for Kirill: где-то здесь ты должен начать кодить кнопки
+
     sf::RenderWindow window(sf::VideoMode(board_size, board_size), "ChessSFML", sf::Style::Titlebar | sf::Style::Close);;
     auto desktop = sf::VideoMode::getDesktopMode();
     window.setPosition(Vector2i(desktop.width/2 - window.getSize().x/2, desktop.height/2 - window.getSize().y/2));
