@@ -6,6 +6,7 @@ class ChessHandler {
     private:
 
     bool WhiteToMove = true;
+    //TODO for Dmitry: рокировка
     bool WhiteCastled = false;
     bool BlackCastled = false;
 
