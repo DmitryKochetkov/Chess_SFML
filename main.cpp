@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "ChessHandler.h"
+#include <string>
 
 using namespace sf;
 
@@ -91,9 +92,15 @@ int main() {
                     std::cout << "Trying move " << move << std::endl;
                     std::cout << "Moved piece " << moved_piece << std::endl << std::endl;
 
-                    if (game.move(move))
-                        board[moved_piece].setPosition(newPosition);
+                    // if (game.move(move))
+                    //     board[moved_piece].setPosition(newPosition);
 
+                    if (game.move(move)) {
+                        string title = "ChessSFML (";
+                        title += (game.get_WhiteToMove() ? "White to move" : "Black to move");
+                        title += ")";
+                        window.setTitle(title);
+                    }
                     loadPosition();
 
                     game.print();

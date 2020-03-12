@@ -6,6 +6,8 @@ class ChessHandler {
     private:
 
     bool WhiteToMove = true;
+    bool WhiteCastled = false;
+    bool BlackCastled = false;
 
     int position[8][8] = {
         {5, 4, 3, 2, 1, 3, 4, 5},
@@ -21,18 +23,18 @@ class ChessHandler {
     //check there is nothing on the way to destination
     bool way_is_free(int i1, int j1, int i2, int j2) {
         if (i1 == i2) {
-            for (int j = j1 + 1; j != j2; j < j2 ? j++ : j--)
+            for (int j = j1 + (j2 > j1 ? 1: -1); j != j2; j < j2 ? j++ : j--)
                 if (position[j][i1] != 0)
                     return false;
         }
         else if (j1 == j2) {
-            for (int i = i1 + 1; i != i2; i < i2 ? i++ : i--)
+            for (int i = i1 + (i2 > i1 ? 1: -1); i != i2; i < i2 ? i++ : i--)
                 if (position[j1][i] != 0)
                     return false;
         }
         else
-        for (int i = i1 + 1, j = j1 + 1; i != i2 && j != j2; i < i2 ? i++ : i--, j < j2 ? j++: j--) {
-            if (position[i][j] != 0)
+        for (int i = i1 + (i2 > i1 ? 1: -1), j = j1 + (j2 > j1 ? 1: -1); i != i2 && j != j2; i < i2 ? i++ : i--, j < j2 ? j++: j--) {
+            if (position[j][i] != 0)
                 return false;
         }
 
@@ -112,7 +114,7 @@ class ChessHandler {
         if (position[j1][i1] > 0 != WhiteToMove || position[j1][i1] == 0 || position[j1][i1] * position[j2][i2] > 0)
             return false;
 
-        bool KingCorrect = (abs(j2-j1) > 1 || abs(i2-i1) > 1);
+        bool KingCorrect = (abs(j2-j1) <= 1 && abs(i2-i1) <= 1);
         bool BishopCorrect = (abs(j2-j1) == abs(i2-i1));
         bool KnightCorrect = ((abs(j2-j1) == 2 && abs(i2-i1) == 1) || (abs(i2-i1) == 2 && abs(j2-j1) == 1));
         bool RookCorrect = (j2 == j1 || i2 == i1);
