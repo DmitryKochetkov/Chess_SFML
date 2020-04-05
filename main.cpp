@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include "ChessHandler.h"
 #include "Group.h"
+#include "Label.h"
 #include <string>
 
 using namespace sf;
@@ -35,6 +36,8 @@ int main() {
     Group menu;
 
     Sprite board_bg(t_board_bg);
+    Label label(sf::Vector2f(200, 300), "Hi!");
+    menu.push_back(label);
 
     while (window.isOpen())
     {
