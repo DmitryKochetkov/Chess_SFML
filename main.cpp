@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "ChessHandler.h"
+#include "Group.h"
 #include <string>
 
 using namespace sf;
@@ -36,11 +37,17 @@ int main() {
     auto desktop = sf::VideoMode::getDesktopMode();
     window.setPosition(Vector2i(desktop.width/2 - window.getSize().x/2, desktop.height/2 - window.getSize().y/2));
 
+    //Загрузка текстур и шрифтов
+
     Texture t_board_bg;
-    t_board_bg.loadFromFile("board.png");
+    t_board_bg.loadFromFile("../board.png");
 
     Texture t_pieces; //TODO: move
-    t_pieces.loadFromFile("pieces_resized.png");
+    t_pieces.loadFromFile("../pieces_resized.png");
+
+    //Спрайты
+
+    Group menu;
 
     Sprite board_bg(t_board_bg);
 
@@ -109,11 +116,10 @@ int main() {
             if (isMove) {
                 board[moved_piece].setPosition(pos.x - dx, pos.y - dy);
             }
-            
         }
 
         window.clear();
-        window.draw(board_bg);
+        window.draw(menu);
         for (int i = 0; i < 32; i++) window.draw(board[i]);
         window.display();
     }
