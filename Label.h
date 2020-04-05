@@ -11,20 +11,22 @@
 class Label : public sf::Drawable {
     sf::RectangleShape body;
     sf::Text text;
+    std::unique_ptr<sf::Font> font; //TODO: убрать этот ужас
 
 public:
-    Label(const sf::Vector2f position, const std::string& text, const sf::Vector2f size = sf::Vector2f(150, 50)) {
+    Label(const sf::Vector2f position, const std::string& text, const sf::Vector2f size = sf::Vector2f(200, 100)) {
         body = sf::RectangleShape(size);
         body.setPosition(position);
         body.setFillColor(sf::Color(255, 255, 255, 0));
         body.setOutlineColor(sf::Color(255, 255, 255));
         body.setOutlineThickness(3.0f);
 
-        sf::Font font;
-        font.loadFromFile("../resources/fonts/PT Sans.ttf");
+        //TODO: переделать с использованием ResourcesHolder
+        font = std::make_unique<sf::Font>();
+        font->loadFromFile("../resources/fonts/PT Sans.ttf");
 
         this->text.setString("text");
-        this->text.setFont(font);
+        this->text.setFont(*font);
         this->text.setPosition(position);
     }
 
