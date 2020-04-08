@@ -47,8 +47,6 @@ int main() {
 
     //Спрайты
 
-    Group menu;
-
     Sprite board_bg(t_board_bg);
 
     for (int i = 0; i < 32; i++) board[i].setTexture(t_pieces);
@@ -119,7 +117,7 @@ int main() {
         }
 
         window.clear();
-        window.draw(menu);
+		window.draw(board_bg);
         for (int i = 0; i < 32; i++) window.draw(board[i]);
         window.display();
     }
