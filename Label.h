@@ -28,6 +28,7 @@ public:
         this->text.setString("text");
         this->text.setFont(*font);
         this->text.setPosition(position);
+        int x;
     }
 
 protected:
