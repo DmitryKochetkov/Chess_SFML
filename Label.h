@@ -6,6 +6,7 @@
 #define CHESS_SFML_LABEL_H
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 
 class Label : public sf::Drawable {
@@ -27,8 +28,12 @@ public:
 
         this->text.setString("text");
         this->text.setFont(*font);
-        this->text.setPosition(position);
         int x;
+        sf::Vector2f offset; 
+        offset.x = (float)this->text.getGlobalBounds().width;
+        offset.y = (float)this->text.getGlobalBounds().height/0.5f;
+        this->text.setPosition(position+size*0.5f - offset*0.5f);
+        std::cout << this->text.getGlobalBounds().width << std::endl;
     }
 
 protected:
