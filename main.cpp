@@ -4,6 +4,7 @@
 #include "ChessHandler.h"
 #include "Group.h"
 #include "Label.h"
+#include "ResourceHolder.h"
 #include <string>
 
 using namespace sf;
@@ -25,8 +26,8 @@ int main() {
 
     //Загрузка текстур и шрифтов
 
-    Texture t_board_bg;
-    t_board_bg.loadFromFile("../board.png");
+    ResourceHolder::Instance().loadTexture("../board.png", "board");
+
 
     Texture t_pieces; //TODO: move
     t_pieces.loadFromFile("../pieces_resized.png");
@@ -35,7 +36,8 @@ int main() {
 
     Group menu;
 
-    Sprite board_bg(t_board_bg);
+    Texture redundant = ResourceHolder::Instance().getTexture("board");
+    Sprite board_bg(redundant);
     Label label(sf::Vector2f(200, 300), "Hi!");
     menu.push_back(label);
 
@@ -50,7 +52,8 @@ int main() {
         }
 
         window.clear();
-        window.draw(menu);
+        //window.draw(menu);
+        window.draw(board_bg);
         window.display();
     }
 

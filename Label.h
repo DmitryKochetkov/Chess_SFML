@@ -7,6 +7,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "ResourceHolder.h"
 
 
 class Label : public sf::Drawable {
@@ -23,6 +24,7 @@ public:
         body.setOutlineThickness(3.0f);
 
         //TODO: переделать с использованием ResourcesHolder
+
         font = std::make_unique<sf::Font>();
         font->loadFromFile("../resources/fonts/PT Sans.ttf");
 
