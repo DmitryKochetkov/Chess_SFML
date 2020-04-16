@@ -50,6 +50,7 @@ int main() {
     Group menu;
 
     Sprite board_bg(t_board_bg);
+    menu.push_back(board_bg);
 
     for (int i = 0; i < 32; i++) board[i].setTexture(t_pieces);
     loadPosition();

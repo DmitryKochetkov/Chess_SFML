@@ -6,9 +6,11 @@ class ChessHandler {
     private:
 
     bool WhiteToMove = true;
-    //TODO for Dmitry: рокировка
-    bool WhiteCastled = false;
-    bool BlackCastled = false;
+
+    bool WhiteCanCastleKingside = true;
+    bool WhiteCanCastleQueenside = true;
+    bool BlackCanCastleKingside = true;
+    bool BlackCanCastleQueenside = true;
 
     int position[8][8] = {
         {5, 4, 3, 2, 1, 3, 4, 5},
@@ -115,7 +117,13 @@ class ChessHandler {
         if (position[j1][i1] > 0 != WhiteToMove || position[j1][i1] == 0 || position[j1][i1] * position[j2][i2] > 0)
             return false;
 
-        bool KingCorrect = (abs(j2-j1) <= 1 && abs(i2-i1) <= 1);
+        bool KingCastlingCorrect =
+                (i1 == 4 && j1 == WhiteToMove ? 0 : 7) //start position is ok
+                && j2 == j1 //horizontal moving
+                && (
+                        ((i2 == 6) && (WhiteToMove? WhiteCanCastleKingside : BlackCanCastleKingside)) ||
+                        ((i2 == 2) && (WhiteToMove? WhiteCanCastleQueenside : BlackCanCastleQueenside))); //check color and ability to castle
+        bool KingCorrect = (abs(j2-j1) <= 1 && abs(i2-i1) <= 1) || KingCastlingCorrect;
         bool BishopCorrect = (abs(j2-j1) == abs(i2-i1));
         bool KnightCorrect = ((abs(j2-j1) == 2 && abs(i2-i1) == 1) || (abs(i2-i1) == 2 && abs(j2-j1) == 1));
         bool RookCorrect = (j2 == j1 || i2 == i1);
@@ -128,8 +136,41 @@ class ChessHandler {
         case 1:
             if (!KingCorrect)
                 return false;
+
+            //move out of switch?
+            if (KingCastlingCorrect) {
+                if (WhiteToMove) {
+                    WhiteCanCastleKingside = false;
+                    WhiteCanCastleQueenside = false;
+                }
+                else {
+                    BlackCanCastleKingside = false;
+                    BlackCanCastleQueenside = false;
+                }
+
+                position[j2][i2] = position[j1][i1];
+                position[j1][i1] = 0;
+                //TODO: fix queen side when long castling
+                if (i2 == 6) { //king side
+                    //change rook position
+                    position[j2][i2 - 1] = position[j2][i2 + 1];
+                    position[j2][i2 + 1] = 0;
+                }
+                else if (i2 == 2) { //queen side
+                    //change rook position
+                    position[j2][i2 + 1] = position[j2][i2 - 2];
+                    position[j2][i2 - 2] = 0;
+                }
+
+                WhiteToMove = !WhiteToMove;
+
+                return true;
+            }
+
+
+
+
             //TODO: check enemy king is close - actually this is a part of after move check
-            //TODO: castling
             break;
 
         case 2:
@@ -155,7 +196,21 @@ class ChessHandler {
             if (!RookCorrect)
                 return false;
             if (!way_is_free(i1, j1, i2, j2))
-                return false; 
+                return false;
+
+            if (j1 == 0) { //handles the first move of the white rook
+                if (i1 == 0) //queen side
+                    WhiteCanCastleQueenside = false;
+                else //king side
+                    WhiteCanCastleKingside = false;
+            }
+            else { //handles the first move of the black rook
+                if (i1 == 0) //queen side
+                    BlackCanCastleQueenside = false;
+                else //king side
+                    BlackCanCastleKingside = false;
+            }
+
             break;
 
         case 6:
@@ -165,10 +220,8 @@ class ChessHandler {
         
         default:
             return false;
-            break;
         }
 
-        
         //TODO: check check and mate:)))
 
         position[j2][i2] = position[j1][i1];
