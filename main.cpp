@@ -27,17 +27,14 @@ int main() {
     //Загрузка текстур и шрифтов
 
     ResourceHolder::Instance().loadTexture("../board.png", "board");
-
-
-    Texture t_pieces; //TODO: move
-    t_pieces.loadFromFile("../pieces_resized.png");
+    ResourceHolder::Instance().loadTexture("../pieces_resized.png", "pieces");
+    ResourceHolder::Instance().loadFont("../resources/fonts/PT Sans.ttf", "PT Sans");
 
     //Спрайты
 
     Group menu;
 
-    Texture redundant = ResourceHolder::Instance().getTexture("board");
-    Sprite board_bg(redundant);
+    Sprite board_bg(ResourceHolder::Instance().getTexture("board"));
     Label label(sf::Vector2f(200, 300), "Hi!");
     menu.push_back(label);
 
@@ -52,8 +49,8 @@ int main() {
         }
 
         window.clear();
-        //window.draw(menu);
-        window.draw(board_bg);
+        window.draw(menu);
+        //window.draw(board_bg);
         window.display();
     }
 
