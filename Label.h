@@ -16,6 +16,7 @@ class Label : public sf::Drawable {
     sf::Text text;
 
 public:
+    //TODO: Vector2f -> Vector2i
     Label(const sf::Vector2f position, const std::string& text, const sf::Vector2f size = sf::Vector2f(200, 100)) {
         body = sf::RectangleShape(size);
         body.setPosition(position);
@@ -23,7 +24,7 @@ public:
         body.setOutlineColor(sf::Color(255, 255, 255));
         body.setOutlineThickness(3.0f);
 
-        this->text.setString("text");
+        this->text.setString(text);
         this->text.setFont(ResourceHolder::Instance().getFont("PT Sans"));
         int x;
         sf::Vector2f offset; 
@@ -31,6 +32,11 @@ public:
         offset.y = (float)this->text.getGlobalBounds().height/0.5f;
         this->text.setPosition(position+size*0.5f - offset*0.5f);
         std::cout << this->text.getGlobalBounds().width << std::endl;
+    }
+
+    template <class T>
+    bool contains(sf::Vector2<T> point) {
+        return body.getGlobalBounds().contains(point.x, point.y);
     }
 
 protected:
