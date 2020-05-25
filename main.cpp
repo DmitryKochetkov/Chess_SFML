@@ -36,16 +36,16 @@ int main() {
 
     Sprite board_bg(ResourceHolder::Instance().getTexture("board"));
 
-    Label label1((sf::Vector2f(window.getSize().y * 0.5f - 100, 50)), "Label 1");
-    Label label2((sf::Vector2f(window.getSize().y * 0.5f - 100, 200)), "Label 2");
-    Label label3((sf::Vector2f(window.getSize().y * 0.5f - 100, 350)), "Label 3");
-    menu.push_back(label1);
-    menu.push_back(label2);
-    menu.push_back(label3);
+    Label start((sf::Vector2f(window.getSize().y * 0.5f - 100, 50)), L"Начать игру");
+    Label settings((sf::Vector2f(window.getSize().y * 0.5f - 100, 200)), L"Настройки");
+    Label exit((sf::Vector2f(window.getSize().y * 0.5f - 100, 350)), L"Выход");
+    menu.push_back(start);
+    menu.push_back(settings);
+    menu.push_back(exit);
 
-    Label label4((sf::Vector2f(window.getSize().y * 0.5f - 100, 50)), "Label 4");
-    Label label5((sf::Vector2f(window.getSize().y * 0.5f - 100, 200)), "Label 5");
-    Label label6((sf::Vector2f(window.getSize().y * 0.5f - 100, 350)), "Label 6");
+    Label label4((sf::Vector2f(window.getSize().y * 0.5f - 100, 50)), L"Против компьютера");
+    Label label5((sf::Vector2f(window.getSize().y * 0.5f - 100, 200)), L"Против пользователя");
+    Label label6((sf::Vector2f(window.getSize().y * 0.5f - 100, 350)), L"Лобби");
     game_group.push_back(label4);
     game_group.push_back(label5);
     game_group.push_back(label6);
@@ -61,7 +61,7 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
 
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && label1.contains(sf::Mouse::getPosition(window)))
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && start.contains(sf::Mouse::getPosition(window)))
                 visible = game_group;
         }
 

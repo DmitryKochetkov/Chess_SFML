@@ -17,14 +17,14 @@ class Label : public sf::Drawable {
 
 public:
     //TODO: Vector2f -> Vector2i
-    Label(const sf::Vector2f position, const std::string& text, const sf::Vector2f size = sf::Vector2f(200, 100)) {
+    Label(const sf::Vector2f position, const std::wstring& text, const sf::Vector2f size = sf::Vector2f(200, 100)) {
         body = sf::RectangleShape(size);
         body.setPosition(position);
-        body.setFillColor(sf::Color(255, 255, 255, 0));
+        body.setFillColor(sf::Color(0, 0, 0, 255));
         body.setOutlineColor(sf::Color(255, 255, 255));
         body.setOutlineThickness(3.0f);
 
-        this->text.setString(text);
+        this->text.setString(sf::String(text));
         this->text.setFont(ResourceHolder::Instance().getFont("PT Sans"));
         int x;
         sf::Vector2f offset; 
