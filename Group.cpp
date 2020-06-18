@@ -4,10 +4,7 @@
 
 #include "Group.h"
 
-Group::Group()
-        : m_drawables{} {
-
-}
+Group::Group(): m_drawables{} {}
 
 void Group::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     for(const auto& drawable : m_drawables) {
