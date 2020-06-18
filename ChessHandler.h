@@ -150,7 +150,7 @@ class ChessHandler {
 
                 position[j2][i2] = position[j1][i1];
                 position[j1][i1] = 0;
-                //TODO: fix queen side when long castling
+
                 if (i2 == 6) { //king side
                     //change rook position
                     position[j2][i2 - 1] = position[j2][i2 + 1];
@@ -166,9 +166,6 @@ class ChessHandler {
 
                 return true;
             }
-
-
-
 
             //TODO: check enemy king is close - actually this is a part of after move check
             break;
