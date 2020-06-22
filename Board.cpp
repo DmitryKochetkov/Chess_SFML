@@ -5,7 +5,7 @@
 #include <SFML/Window/Event.hpp>
 #include "Board.h"
 
-Board::Board() {
+Board::Board(int game_id): table(game_id, &handler) {
     figures = std::vector<sf::Sprite>();
     //TODO: загружать текстуры с учетом пользовательских настроек
     t_background.loadFromFile("../board.png");
@@ -15,7 +15,7 @@ Board::Board() {
         sf::Sprite sprite(t_pieces);
         figures.push_back(sprite);
     }
-
+    table.setPosition(sf::Vector2f(554, 20));
     loadPosition();
 }
 

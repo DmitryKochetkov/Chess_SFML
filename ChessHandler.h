@@ -42,6 +42,7 @@ public:
             char letter = ChessHandler::PieceLetters[abs(piece_id)];
             if (letter != 'p')
                 chessNotation += toupper(letter);
+            //TODO: если обе фигуры могут встать на эту клетку, добавить координату, уточняющую какой из них ходит
             chessNotation += 'a' + col2;
             chessNotation += '1' + row2;
             if (mate) chessNotation += "#";
@@ -80,7 +81,6 @@ public:
     };
 
 private:
-
     std::vector<Move*> history;
     bool WhiteToMove = true;
 
@@ -292,4 +292,7 @@ private:
         return result;
     }
 
+    const vector<Move *> &getHistory() const {
+        return history;
+    }
 };

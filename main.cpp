@@ -7,7 +7,7 @@
 #include <string>
 
 int main() {
-    sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(504, 504), "ChessSFML", sf::Style::Titlebar | sf::Style::Close);;
+    sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(754, 504), "ChessSFML", sf::Style::Titlebar | sf::Style::Close);;
     auto desktop = sf::VideoMode::getDesktopMode();
     window->setPosition(sf::Vector2i(
             desktop.width/2 - window->getSize().x/2,
@@ -25,7 +25,13 @@ int main() {
 
     Group game_session;
 
-    Board board;
+    Board board(1);
+    sf::RectangleShape background(sf::Vector2f(754, 504));
+    background.setFillColor(sf::Color(255, 255, 255, 255));
+
+    game_session.push_back(background);
+    game_session.push_back(board);
+    //game_session.push_back(table);
 
     while (window->isOpen())
     {
@@ -44,14 +50,12 @@ int main() {
 
             if (event.type == sf::Event::MouseButtonReleased && event.key.code == sf::Mouse::Left)
                 board.onLeftMouseButtonReleased();
-
-
         }
         if (board.isMove)
             board.onMove();
 
         window->clear();
-        window->draw(board);
+        window->draw(game_session);
         window->display();
     }
 
