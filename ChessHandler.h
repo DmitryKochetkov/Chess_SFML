@@ -3,8 +3,85 @@
 using namespace std;
 
 class ChessHandler {
+public:
+    class Move {
     private:
+        int piece_id;
+        int row1, col1, row2, col2;
+        bool check;
+        bool mate;
+        bool bad = false;
+        bool good = false;
+    public:
 
+        Move(int piece_id, int row1, int col1, int row2, int col2, bool check, bool mate) {
+            if (row1 > 7 || row1 < 0) throw std::runtime_error("Incorrect piece coordinates");
+            if (col1 > 7 || col1 < 0) throw std::runtime_error("Incorrect piece coordinates");
+            if (row2 > 7 || row2 < 0) throw std::runtime_error("Incorrect piece coordinates");
+            if (col2 > 7 || col2 < 0) throw std::runtime_error("Incorrect piece coordinates");
+
+            this->piece_id = piece_id;
+            this->row1 = row1;
+            this->col1 = col1;
+            this->row2 = row2;
+            this->col2 = col2;
+        }
+
+//        std::string toString() {
+//            std::string result;
+//            result += col1 - 'a';
+//            result += row1;
+//            result += col2 - 'a';
+//            result += row2;
+//            return result;
+//        }
+
+        virtual std::string toChessNotation() {
+            std::string chessNotation;
+            //если 2 фигуры на одной строке или столбце, указать какая именно из них
+            char letter = ChessHandler::PieceLetters[abs(piece_id)];
+            if (letter != 'p')
+                chessNotation += toupper(letter);
+            chessNotation += 'a' + col2;
+            chessNotation += '1' + row2;
+            if (mate) chessNotation += "#";
+            else if (check) chessNotation += "+";
+
+            if (good) chessNotation += "!";
+            if (bad) chessNotation += "?";
+            return chessNotation;
+        }
+    };
+
+    class LongCastlingMove: public Move {
+    public:
+        LongCastlingMove(int pieceId, int row1, int col1, int row2, int col2, bool check, bool mate) : Move(pieceId,
+                                                                                                            row1, col1,
+                                                                                                            row2, col2,
+                                                                                                            check,
+                                                                                                            mate) {}
+
+        string toChessNotation() override {
+            return "0-0-0";
+        }
+    };
+
+    class ShortCastlingMove: public Move {
+    public:
+        ShortCastlingMove(int pieceId, int row1, int col1, int row2, int col2, bool check, bool mate) : Move(pieceId,
+                                                                                                             row1, col1,
+                                                                                                             row2, col2,
+                                                                                                             check,
+                                                                                                             mate) {}
+
+        string toChessNotation() override {
+            return "0-0";
+        }
+    };
+
+private:
+
+    std::vector<Move*> history;
     bool WhiteToMove = true;
 
     bool WhiteCanCastleKingside = true;
@@ -46,47 +123,17 @@ class ChessHandler {
 
     public:
 
+    constexpr static char PieceLetters[8] = {'.', 'k', 'q', 'b', 'n', 'r', 'p', '?'};
+
     void print() {
         for (int i = 7; i >= 0; i--) {
             cout << i+1 << " | ";
             for (int j = 0; j < 8; j++)
             {
                 char out;
-                switch (abs(position[i][j]))
-                {
-                case 0:
-                    out = '.';
-                    break;
-
-                case 1:
-                    out = 'k';
-                    break;
-
-                case 2:
-                    out = 'q';
-                    break;
-
-                case 3:
-                    out = 'b';
-                    break;
-
-                case 4:
-                    out = 'n';
-                    break;
-
-                case 5:
-                    out = 'r';
-                    break;
-
-                case 6:
-                    out = 'p';
-                    break;
-                
-                default:
+                if (abs(position[i][j]) < 0 || abs(position[i][j]) > 7)
                     out = '?';
-                    break;
-                }
-
+                else out = PieceLetters[abs(position[i][j])];
                 out = position[i][j] > 0 ? toupper(out): out;
                 cout << out << " ";
             }
@@ -108,14 +155,14 @@ class ChessHandler {
         cout << endl;
     }
 
-    bool move(char m[4]) {
+    Move* move(char m[4]) {
         int i1 = m[0] - 'a';
         int j1 = m[1] - '1';
         int i2 = m[2] - 'a';
         int j2 = m[3] - '1';
 
         if (position[j1][i1] > 0 != WhiteToMove || position[j1][i1] == 0 || position[j1][i1] * position[j2][i2] > 0)
-            return false;
+            return nullptr;
 
         bool KingCastlingCorrect =
                 (i1 == 4 && j1 == WhiteToMove ? 0 : 7) //start position is ok
@@ -135,7 +182,7 @@ class ChessHandler {
         {
         case 1:
             if (!KingCorrect)
-                return false;
+                return nullptr;
 
             //move out of switch?
             if (KingCastlingCorrect) {
@@ -155,16 +202,17 @@ class ChessHandler {
                     //change rook position
                     position[j2][i2 - 1] = position[j2][i2 + 1];
                     position[j2][i2 + 1] = 0;
+                    history.push_back(new ShortCastlingMove(position[j2][i2], j1, i1, j2, i2, false, false));
                 }
                 else if (i2 == 2) { //queen side
                     //change rook position
                     position[j2][i2 + 1] = position[j2][i2 - 2];
                     position[j2][i2 - 2] = 0;
+                    history.push_back(new LongCastlingMove(position[j2][i2], j1, i1, j2, i2, false, false));
                 }
 
                 WhiteToMove = !WhiteToMove;
-
-                return true;
+                return getLastMove();
             }
 
             //TODO: check enemy king is close - actually this is a part of after move check
@@ -172,28 +220,28 @@ class ChessHandler {
 
         case 2:
             if (!QueenCorrect)
-                return false;
+                return nullptr;
             if (!way_is_free(i1, j1, i2, j2))
-                return false;
+                return nullptr;
             break;
 
         case 3:
             if (!BishopCorrect)
-                return false;
+                return nullptr;
             if (!way_is_free(i1, j1, i2, j2))
-                return false;
+                return nullptr;
             break;
 
         case 4:
             if (!KnightCorrect)
-                return false;
+                return nullptr;
             break;
 
         case 5:
             if (!RookCorrect)
-                return false;
+                return nullptr;
             if (!way_is_free(i1, j1, i2, j2))
-                return false;
+                return nullptr;
 
             if (j1 == 0) { //handles the first move of the white rook
                 if (i1 == 0) //queen side
@@ -212,22 +260,36 @@ class ChessHandler {
 
         case 6:
             if (!PawnCorrect)
-                return false;
+                return nullptr;
             break;
         
         default:
-            return false;
+            return nullptr;
         }
 
         //TODO: check check and mate:)))
+
+        history.push_back(new Move(position[j1][i1], j1, i1, j2, i2, false, false));
 
         position[j2][i2] = position[j1][i1];
         position[j1][i1] = 0;
         WhiteToMove = !WhiteToMove;
 
-        return true;
+        return getLastMove();
     }
 
     bool get_WhiteToMove() {return WhiteToMove;}
     int get_cell(int row, int column) {return position[row][column];}
+    //Move getMove(int id) { return history.at(id); }
+    Move* getLastMove() { if (history.empty()) return nullptr; return history.back(); }
+    std::string getHistoryString() {
+        std::string result;
+        for (int i = 0; i < history.size(); i++) {
+            if ((i + 1) % 2 != 0)
+                result += std::to_string((i + 2) / 2) + ". ";
+            result += history[i]->toChessNotation() + " ";
+        }
+        return result;
+    }
+
 };

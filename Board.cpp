@@ -5,7 +5,8 @@
 #include <SFML/Window/Event.hpp>
 #include "Board.h"
 
-Board::Board() : figures(figures) {
+Board::Board() {
+    figures = std::vector<sf::Sprite>();
     //TODO: загружать текстуры с учетом пользовательских настроек
     t_background.loadFromFile("../board.png");
     t_pieces.loadFromFile("../pieces_resized.png");
@@ -19,16 +20,17 @@ Board::Board() : figures(figures) {
 }
 
 void Board::loadPosition() {
+    figures.clear();
     int k = 0;
     for (int i = 0; i < 8; i++)
-        for (int j = 0; j < 8; j++)
-        {
-            int piece_id = game.get_cell(i, j);
+        for (int j = 0; j < 8; j++) {
+            int piece_id = handler.get_cell(i, j);
             if (piece_id != 0) {
                 int x = abs(piece_id) - 1;
                 int y = piece_id > 0 ? 0 : 1;
-                figures[k].setTextureRect(sf::IntRect(field_size*x, field_size*y, field_size, field_size));
-                figures[k].setPosition(field_size*j + border, field_size*(7-i) + border);
+                figures.push_back(sf::Sprite(t_pieces));
+                figures[k].setTextureRect(sf::IntRect(field_size * x, field_size * y, field_size, field_size));
+                figures[k].setPosition(field_size * j + border, field_size * (7 - i) + border);
                 k++;
             }
         }
@@ -39,6 +41,7 @@ void Board::onMouseButtonPressed(sf::RenderWindow* window) {
     for (int i = 0; i < 32; i++) {
         if (figures[i].getGlobalBounds().contains(initMousePosition.x, initMousePosition.y)) {
             isMove = true; moved_piece = i;
+            window->draw(figures[i]); //TODO: перерисовка, чтобы двигаемая фигура была сверх
             dx = figures[i].getPosition().x - sf::Mouse::getPosition(*window).x;
             dy = figures[i].getPosition().y - sf::Mouse::getPosition(*window).y;
 
@@ -57,21 +60,30 @@ void Board::onLeftMouseButtonReleased() {
     move[2] = static_cast<int>('a') + (int) (newPosition.x / field_size);
     move[3] = std::to_string(8 - (int) (newPosition.y / field_size))[0];
 
-    std::cout << "Trying move " << move << std::endl;
+    std::cout << (handler.get_WhiteToMove() ? "White" : "Black") << " are trying move " << move << std::endl;
     std::cout << "Moved piece " << moved_piece << std::endl << std::endl;
 
     // if (game.move(move))
     //     board[moved_piece].setPosition(newPosition);
 
-    if (game.move(move)) {
+    ChessHandler::Move* handled_move = handler.move(move);
+    if (handled_move == nullptr) {
+        std::cout << "Unable to perform move" << std::endl;
+    }
+    if (handled_move != nullptr) {
         string title = "ChessSFML (";
-        title += (game.get_WhiteToMove() ? "White to move" : "Black to move");
+        title += (handler.get_WhiteToMove() ? "White to move" : "Black to move");
         title += ")";
         //window.setTitle(title);
     }
-    loadPosition();
+    if (handled_move != nullptr)
+        std::cout << "Performed move " << handled_move->toChessNotation() << std::endl;
 
-    game.print();
+    loadPosition();
+    std::cout << moved_piece << std::endl;
+
+    handler.print();
+    std::cout << handler.getHistoryString() << std::endl;
 }
 
 

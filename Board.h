@@ -20,7 +20,7 @@ class Board : public sf::Drawable {
     sf::Texture t_background;
     sf::Texture t_pieces;
 
-    ChessHandler game; //TODO: move out?
+    //ChessHandler game; //TODO: move out?
 
     //deprecated variables
 
@@ -35,7 +35,6 @@ public:
 
     void loadPosition();
     void onMouseButtonPressed(sf::RenderWindow* window);
-    //void onMouseButtonPressed(sf::Vector2i mouse_position);
     void onLeftMouseButtonReleased();
 
     void onMove() {
