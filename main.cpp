@@ -31,7 +31,6 @@ int main() {
 
     game_session.push_back(background);
     game_session.push_back(board);
-    //game_session.push_back(table);
 
     while (window->isOpen())
     {

@@ -2,13 +2,6 @@
 // Created by dimedrol on 05.04.2020.
 //
 
-#ifndef WWTBAM_SFML_GROUP_H
-#define WWTBAM_SFML_GROUP_H
-
-
-#ifndef GROUP_INCLUDED_HPP
-#define GROUP_INCLUDED_HPP
-
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <functional>
@@ -27,8 +20,3 @@ public:
 private:
     std::vector<std::reference_wrapper<const sf::Drawable>> m_drawables;
 };
-
-#endif
-
-
-#endif //WWTBAM_SFML_GROUP_H

@@ -66,12 +66,12 @@ void Board::onLeftMouseButtonReleased() {
     // if (game.move(move))
     //     board[moved_piece].setPosition(newPosition);
 
-    ChessHandler::Move* handled_move = handler.move(move);
+    const ChessHandler::Move* handled_move = handler.move(move);
     if (handled_move == nullptr) {
         std::cout << "Unable to perform move" << std::endl;
     }
     if (handled_move != nullptr) {
-        string title = "ChessSFML (";
+        std::string title = "ChessSFML (";
         title += (handler.get_WhiteToMove() ? "White to move" : "Black to move");
         title += ")";
         //window.setTitle(title);

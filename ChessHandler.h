@@ -1,30 +1,33 @@
 #include <iostream>
 
-using namespace std;
-
 class ChessHandler {
 public:
     class Move {
     private:
-        int piece_id;
+        int piece;
         int row1, col1, row2, col2;
-        bool check;
-        bool mate;
+        bool eating = false;
+        bool check = false;
+        bool mate = false;
         bool bad = false;
         bool good = false;
     public:
 
-        Move(int piece_id, int row1, int col1, int row2, int col2, bool check, bool mate) {
+        Move(int piece, int row1, int col1, int row2, int col2, bool check, bool mate) {
             if (row1 > 7 || row1 < 0) throw std::runtime_error("Incorrect piece coordinates");
             if (col1 > 7 || col1 < 0) throw std::runtime_error("Incorrect piece coordinates");
             if (row2 > 7 || row2 < 0) throw std::runtime_error("Incorrect piece coordinates");
             if (col2 > 7 || col2 < 0) throw std::runtime_error("Incorrect piece coordinates");
 
-            this->piece_id = piece_id;
+            this->piece = piece;
             this->row1 = row1;
             this->col1 = col1;
             this->row2 = row2;
             this->col2 = col2;
+        }
+
+        void setEating(bool eating) {
+            this->eating = eating;
         }
 
 //        std::string toString() {
@@ -36,21 +39,60 @@ public:
 //            return result;
 //        }
 
-        virtual std::string toChessNotation() {
+        virtual std::string toChessNotation() const {
             std::string chessNotation;
             //если 2 фигуры на одной строке или столбце, указать какая именно из них
-            char letter = ChessHandler::PieceLetters[abs(piece_id)];
-            if (letter != 'p')
-                chessNotation += toupper(letter);
-            //TODO: если обе фигуры могут встать на эту клетку, добавить координату, уточняющую какой из них ходит
-            chessNotation += 'a' + col2;
-            chessNotation += '1' + row2;
+            char letter = ChessHandler::PieceLetters[abs(piece)];
+            if (letter != 'p') {
+                chessNotation += std::toupper(letter);
+                //TODO: если обе фигуры могут встать на эту клетку, добавить координату, уточняющую какой из них ходит
+                if (eating)
+                    chessNotation += 'x';
+                chessNotation += 'a' + col2;
+                chessNotation += '1' + row2;
+            }
+            else if (eating) {
+                chessNotation += col1 + 'a';
+                chessNotation += col2 + 'a';
+            }
+            else {
+                chessNotation += 'a' + col2;
+                chessNotation += '1' + row2;
+            }
             if (mate) chessNotation += "#";
             else if (check) chessNotation += "+";
 
             if (good) chessNotation += "!";
             if (bad) chessNotation += "?";
             return chessNotation;
+        }
+
+        void setCheck(bool check) {
+            Move::check = check;
+        }
+
+        void setMate(bool mate) {
+            Move::mate = mate;
+        }
+
+        int getPiece() const {
+            return piece;
+        }
+
+        int getRow1() const {
+            return row1;
+        }
+
+        int getCol1() const {
+            return col1;
+        }
+
+        int getRow2() const {
+            return row2;
+        }
+
+        int getCol2() const {
+            return col2;
         }
     };
 
@@ -62,7 +104,7 @@ public:
                                                                                                             check,
                                                                                                             mate) {}
 
-        string toChessNotation() override {
+        std::string toChessNotation() const override {
             return "0-0-0";
         }
     };
@@ -75,13 +117,13 @@ public:
                                                                                                              check,
                                                                                                              mate) {}
 
-        string toChessNotation() override {
+        std::string toChessNotation() const override {
             return "0-0";
         }
     };
 
 private:
-    std::vector<Move*> history;
+    std::vector<const Move*> history;
     bool WhiteToMove = true;
 
     bool WhiteCanCastleKingside = true;
@@ -99,6 +141,10 @@ private:
         {-6, -6, -6, -6, -6, -6, -6, -6},
         {-5, -4, -3, -2, -1, -3, -4, -5}
     };
+
+    bool onBoard(int i) {
+        return i >= 0 && i < 8;
+    }
 
     //check there is nothing on the way to destination
     bool way_is_free(int i1, int j1, int i2, int j2) {
@@ -121,13 +167,27 @@ private:
         return true;
     }
 
+    std::pair<int, int> findWhiteKing(int positionAfterMove[8][8]) {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                if (positionAfterMove[j][i] == 1)
+                    return std::pair<int, int>(j, i);
+    }
+
+    std::pair<int, int> findBlackKing(int positionAfterMove[8][8]) {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                if (positionAfterMove[j][i] == -1)
+                    return std::pair<int, int>(j, i);
+    }
+
     public:
 
     constexpr static char PieceLetters[8] = {'.', 'k', 'q', 'b', 'n', 'r', 'p', '?'};
 
     void print() {
         for (int i = 7; i >= 0; i--) {
-            cout << i+1 << " | ";
+            std::cout << i+1 << " | ";
             for (int j = 0; j < 8; j++)
             {
                 char out;
@@ -135,33 +195,37 @@ private:
                     out = '?';
                 else out = PieceLetters[abs(position[i][j])];
                 out = position[i][j] > 0 ? toupper(out): out;
-                cout << out << " ";
+                std::cout << out << " ";
             }
-            cout << endl;
+            std::cout << std::endl;
         }
 
-        cout << "   ";
+        std::cout << "   ";
         for (int i = 0; i < 8; i++) {
-            cout << " _";
+            std::cout << " _";
         }
 
-        cout << endl;
+        std::cout << std::endl;
 
-        cout << "   ";
+        std::cout << "   ";
         for (int i = 0; i < 8; i++) {
-            cout << " " << char('A' + i);
+            std::cout << " " << char('A' + i);
         }
 
-        cout << endl;
+        std::cout << std::endl;
     }
 
-    Move* move(char m[4]) {
+    const Move* move(char m[4]) {
+        Move* result = nullptr;
         int i1 = m[0] - 'a';
         int j1 = m[1] - '1';
         int i2 = m[2] - 'a';
         int j2 = m[3] - '1';
 
         if (position[j1][i1] > 0 != WhiteToMove || position[j1][i1] == 0 || position[j1][i1] * position[j2][i2] > 0)
+            return nullptr;
+
+        if (abs(position[j2][i2]) == 1) //короля нельзя съесть
             return nullptr;
 
         bool KingCastlingCorrect =
@@ -174,7 +238,10 @@ private:
         bool BishopCorrect = (abs(j2-j1) == abs(i2-i1));
         bool KnightCorrect = ((abs(j2-j1) == 2 && abs(i2-i1) == 1) || (abs(i2-i1) == 2 && abs(j2-j1) == 1));
         bool RookCorrect = (j2 == j1 || i2 == i1);
-        bool PawnCorrect = (j2 == j1 + (WhiteToMove ? 1 : -1)) || (j2 == j1 + (WhiteToMove ? 2 : -2)); //TODO: взятие на проходе
+        bool PawnCorrect = ((i2 == i1) && position[j2][i2] == 0 && (j2 == j1 + (WhiteToMove ? 1 : -1))) ||
+                            ((abs(i2-i1)==1) && position[j2][i2] != 0 && (j2 == j1 + (WhiteToMove ? 1 : -1))) ||
+                            ((i2 == i1) && (j1 == WhiteToMove ? 2 - 1 : 6 - 1) && (position[j2][i2] == 0) && ((j2 == j1 + (WhiteToMove ? 1 : -1)) || ((j2 == j1 + (WhiteToMove ? 2 : -2)) && way_is_free(i1, j1, i2, j2)))) ||
+                            ((j1 == (WhiteToMove ? 4 : 3) && abs(getLastMove()->getPiece()) == 6 && getLastMove()->getRow1() == (WhiteToMove ? 6 : 1) && abs(getLastMove()->getRow2() - getLastMove()->getRow1()) == 2) && (i2 == getLastMove()->getCol2()) && (j2 == getLastMove()->getRow1() + (WhiteToMove ? -1 : 1))); //взятие на проходе
 
         bool QueenCorrect = BishopCorrect ^ RookCorrect;
 
@@ -202,17 +269,21 @@ private:
                     //change rook position
                     position[j2][i2 - 1] = position[j2][i2 + 1];
                     position[j2][i2 + 1] = 0;
-                    history.push_back(new ShortCastlingMove(position[j2][i2], j1, i1, j2, i2, false, false));
+                    result = new ShortCastlingMove(position[j2][i2], j1, i1, j2, i2, false, false);
+                    //TODO: проверка ладьи
+                    history.push_back(result);
                 }
                 else if (i2 == 2) { //queen side
                     //change rook position
                     position[j2][i2 + 1] = position[j2][i2 - 2];
                     position[j2][i2 - 2] = 0;
-                    history.push_back(new LongCastlingMove(position[j2][i2], j1, i1, j2, i2, false, false));
+                    result = new LongCastlingMove(position[j2][i2], j1, i1, j2, i2, false, false);
+                    //TODO: проверка ладьи
+                    history.push_back(result);
                 }
 
                 WhiteToMove = !WhiteToMove;
-                return getLastMove();
+                return result;
             }
 
             //TODO: check enemy king is close - actually this is a part of after move check
@@ -230,6 +301,7 @@ private:
                 return nullptr;
             if (!way_is_free(i1, j1, i2, j2))
                 return nullptr;
+
             break;
 
         case 4:
@@ -267,9 +339,99 @@ private:
             return nullptr;
         }
 
-        //TODO: check check and mate:)))
+        result = new Move(position[j1][i1], j1, i1, j2, i2, false, false);
 
-        history.push_back(new Move(position[j1][i1], j1, i1, j2, i2, false, false));
+        bool WhiteKingCheck = false; //1
+        bool BlackKingCheck = false; //-1
+
+        int positionAfterMove[8][8] = {0};
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                positionAfterMove[j][i] = position[j][i];
+
+        positionAfterMove[j2][i2] = position[j1][i1];
+        positionAfterMove[j1][i1] = 0;
+
+        int me_j;
+        int me_i;
+        int opponent_j;
+        int opponent_i;
+
+        if (WhiteToMove) {
+            me_j = findWhiteKing(positionAfterMove).first;
+            me_i = findWhiteKing(positionAfterMove).second;
+            opponent_j = findBlackKing(positionAfterMove).first;
+            opponent_i = findBlackKing(positionAfterMove).second;
+        }
+        else {
+            opponent_j = findWhiteKing(positionAfterMove).first;
+            opponent_i = findWhiteKing(positionAfterMove).second;
+            me_j = findBlackKing(positionAfterMove).first;
+            me_i = findBlackKing(positionAfterMove).second;
+        }
+
+        // проверка фигур по горизонтали
+        for (int i = me_i; i < 8 && way_is_free(me_j, me_i, me_j, i); i++) {
+            if (positionAfterMove[me_j][i] == (5 * (WhiteToMove ? -1 : 1)))
+                return nullptr;
+        }
+
+        for (int i = me_i; i >= 0 && way_is_free(me_j, me_i, me_j, i); i--) {
+
+        }
+
+        for (int i = opponent_i; i < 8 && way_is_free(opponent_j, opponent_i, opponent_j, i); i++) {
+            if (positionAfterMove[opponent_j][i] == (-5 * (WhiteToMove ? -1 : 1)))
+                result->setCheck(true);
+        }
+
+        for (int i = opponent_i; i >= 0 && way_is_free(opponent_j, opponent_i, opponent_j, i); i--) {
+            if (positionAfterMove[opponent_j][i] == (-5 * (WhiteToMove ? -1 : 1)))
+                result->setCheck(true); //не работает на колонке A
+        }
+
+        // проверка фигур по вертикали
+
+        // проверка фигур по диагонали
+        for (int i = opponent_i, j = opponent_j; i < 8 && j < 8; i++, j++) {
+            if ((positionAfterMove[j][i] == (-3 * (WhiteToMove ? -1 : 1))) ||
+                (positionAfterMove[j][i] == (-2 * (WhiteToMove ? -1 : 1)))) {
+                result->setCheck(true);
+            }
+        }
+
+        for (int i = opponent_i, j = opponent_j; i < 8 && j >= 0; i++, j--) {
+            if ((positionAfterMove[j][i] == (-3 * (WhiteToMove ? -1 : 1))) ||
+                (positionAfterMove[j][i] == (-2 * (WhiteToMove ? -1 : 1)))) {
+                result->setCheck(true);
+            }
+        }
+
+        //проверка коней
+        if ((onBoard(me_j + 2) && onBoard(me_i + 1) && positionAfterMove[me_j + 2][me_i + 1] == 4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(me_j + 2) && onBoard(me_i - 1) && positionAfterMove[me_j + 2][me_i - 1] == 4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(me_j - 2) && onBoard(me_i + 1) && positionAfterMove[me_j - 2][me_i + 1] == 4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(me_j - 2) && onBoard(me_i - 1) && positionAfterMove[me_j - 2][me_i - 1] == 4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(me_j + 1) && onBoard(me_i + 2) && positionAfterMove[me_j + 1][me_i + 2] == 4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(me_j + 1) && onBoard(me_i - 2) && positionAfterMove[me_j + 1][me_i - 2] == 4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(me_j - 1) && onBoard(me_i + 2) && positionAfterMove[me_j - 1][me_i + 2] == 4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(me_j - 1) && onBoard(me_i - 2) && positionAfterMove[me_j - 1][me_i - 2] == 4 * (WhiteToMove ? -1 : 1)))
+            return nullptr;
+
+        if ((onBoard(opponent_j + 2) && onBoard(opponent_i + 1) && positionAfterMove[opponent_j + 2][opponent_i + 1] == -4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(opponent_j + 2) && onBoard(opponent_i - 1) && positionAfterMove[opponent_j + 2][opponent_i - 1] == -4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(opponent_j - 2) && onBoard(opponent_i + 1) && positionAfterMove[opponent_j - 2][opponent_i + 1] == -4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(opponent_j - 2) && onBoard(opponent_i - 1) && positionAfterMove[opponent_j - 2][opponent_i - 1] == -4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(opponent_j + 1) && onBoard(opponent_i + 2) && positionAfterMove[opponent_j + 1][opponent_i + 2] == -4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(opponent_j + 1) && onBoard(opponent_i - 2) && positionAfterMove[opponent_j + 1][opponent_i - 2] == -4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(opponent_j - 1) && onBoard(opponent_i + 2) && positionAfterMove[opponent_j - 1][opponent_i + 2] == -4 * (WhiteToMove ? -1 : 1)) ||
+            (onBoard(opponent_j - 1) && onBoard(opponent_i - 2) && positionAfterMove[opponent_j - 1][opponent_i - 2] == -4 * (WhiteToMove ? -1 : 1)))
+            result->setCheck(true);
+        // проверка пешек
+
+        if (position[j2][i2] != 0)
+            result->setEating(true);
+        history.push_back(result);
 
         position[j2][i2] = position[j1][i1];
         position[j1][i1] = 0;
@@ -281,7 +443,7 @@ private:
     bool get_WhiteToMove() {return WhiteToMove;}
     int get_cell(int row, int column) {return position[row][column];}
     //Move getMove(int id) { return history.at(id); }
-    Move* getLastMove() { if (history.empty()) return nullptr; return history.back(); }
+    const Move* getLastMove() { if (history.empty()) return nullptr; return history.back(); }
     std::string getHistoryString() {
         std::string result;
         for (int i = 0; i < history.size(); i++) {
@@ -292,7 +454,7 @@ private:
         return result;
     }
 
-    const vector<Move *> &getHistory() const {
+    const std::vector<const Move*> &getHistory() const {
         return history;
     }
 };
