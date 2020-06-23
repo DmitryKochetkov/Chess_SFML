@@ -90,8 +90,8 @@ private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         sf::Sprite background(t_background);
         target.draw(background);
-        for (int i = 0; i < 32; i++)
-            target.draw(figures[i], states);
+        for (int i = 0; i < figures.size(); i++)
+            target.draw(figures[i]);
         target.draw(table);
     }
 };
