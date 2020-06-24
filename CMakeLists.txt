@@ -3,7 +3,8 @@ project(chess_sfml)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_MODULE_PATH /usr/share/SFML/cmake/Modules)
+file(READ sfml_path.txt CMAKE_MODULE_PATH)
+file(READ sfml_path.txt SFML_DIR)
 find_package(SFML COMPONENTS graphics audio REQUIRED)
 
 add_executable(chess_sfml main.cpp ChessHandler.h Group.cpp Group.h ResourceHolder.h ResourceHolder.cpp)
