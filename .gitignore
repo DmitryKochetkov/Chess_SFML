@@ -1,6 +1,6 @@
 # игнорим и вот эти файлы
 Makefile
 *.o
-
-# назови папку именно вот так
+*.dll
 /cmake-build
+sfml_path.txt
