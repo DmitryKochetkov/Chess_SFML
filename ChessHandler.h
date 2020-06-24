@@ -11,8 +11,8 @@ public:
         bool mate = false;
         bool bad = false;
         bool good = false;
-    public:
 
+    public:
         Move(int piece, int row1, int col1, int row2, int col2, bool check, bool mate) {
             if (row1 > 7 || row1 < 0) throw std::runtime_error("Incorrect piece coordinates");
             if (col1 > 7 || col1 < 0) throw std::runtime_error("Incorrect piece coordinates");
@@ -46,6 +46,10 @@ public:
             if (letter != 'p') {
                 chessNotation += std::toupper(letter);
                 //TODO: если обе фигуры могут встать на эту клетку, добавить координату, уточняющую какой из них ходит
+//                if () {
+//
+//                }
+
                 if (eating)
                     chessNotation += 'x';
                 chessNotation += 'a' + col2;
@@ -185,6 +189,19 @@ private:
 
     constexpr static char PieceLetters[8] = {'.', 'k', 'q', 'b', 'n', 'r', 'p', '?'};
 
+    std::vector<sf::CircleShape> circles; //когда очень не хочешь делать нормальную отладку
+
+    void clearLights() {
+        circles.clear();
+    }
+
+    void addLight(int j, int i) {
+        sf::CircleShape circle(56/2);
+        circle.setFillColor(sf::Color(255, 210, 210));
+        circle.setPosition( (504 - 56 * 8) / 2 + 56 * i, (504 - 56 * 8) / 2 + 56 * j);
+        circles.push_back(circle);
+    }
+
     void print() {
         for (int i = 7; i >= 0; i--) {
             std::cout << i+1 << " | ";
@@ -240,7 +257,7 @@ private:
         bool RookCorrect = (j2 == j1 || i2 == i1);
         bool PawnCorrect = ((i2 == i1) && position[j2][i2] == 0 && (j2 == j1 + (WhiteToMove ? 1 : -1))) ||
                             ((abs(i2-i1)==1) && position[j2][i2] != 0 && (j2 == j1 + (WhiteToMove ? 1 : -1))) ||
-                            ((i2 == i1) && (j1 == WhiteToMove ? 2 - 1 : 6 - 1) && (position[j2][i2] == 0) && ((j2 == j1 + (WhiteToMove ? 1 : -1)) || ((j2 == j1 + (WhiteToMove ? 2 : -2)) && way_is_free(i1, j1, i2, j2)))) ||
+                            ((i2 == i1) && (j1 == WhiteToMove ? 1 : 5) && (position[j2][i2] == 0) && ((j2 == j1 + (WhiteToMove ? 1 : -1)) || ((j2 == j1 + (WhiteToMove ? 2 : -2)) && way_is_free(i1, j1, i2, j2)))) ||
                             ((j1 == (WhiteToMove ? 4 : 3) && abs(getLastMove()->getPiece()) == 6 && getLastMove()->getRow1() == (WhiteToMove ? 6 : 1) && abs(getLastMove()->getRow2() - getLastMove()->getRow1()) == 2) && (i2 == getLastMove()->getCol2()) && (j2 == getLastMove()->getRow1() + (WhiteToMove ? -1 : 1))); //взятие на проходе
 
         bool QueenCorrect = BishopCorrect ^ RookCorrect;
@@ -270,15 +287,13 @@ private:
                     position[j2][i2 - 1] = position[j2][i2 + 1];
                     position[j2][i2 + 1] = 0;
                     result = new ShortCastlingMove(position[j2][i2], j1, i1, j2, i2, false, false);
-                    //TODO: проверка ладьи
                     history.push_back(result);
                 }
-                else if (i2 == 2) { //queen side
+                else if (i2 == 2) { //queen side TODO: не помню точно, насколько клеток
                     //change rook position
                     position[j2][i2 + 1] = position[j2][i2 - 2];
                     position[j2][i2 - 2] = 0;
                     result = new LongCastlingMove(position[j2][i2], j1, i1, j2, i2, false, false);
-                    //TODO: проверка ладьи
                     history.push_back(result);
                 }
 
@@ -286,7 +301,6 @@ private:
                 return result;
             }
 
-            //TODO: check enemy king is close - actually this is a part of after move check
             break;
 
         case 2:
@@ -341,6 +355,7 @@ private:
 
         result = new Move(position[j1][i1], j1, i1, j2, i2, false, false);
 
+        //проверка шаха TODO: рокировку нельзя произвести если стоит шах, проверка шаха должна быть раньше
         bool WhiteKingCheck = false; //1
         bool BlackKingCheck = false; //-1
 
@@ -380,15 +395,23 @@ private:
 
         }
 
-        for (int i = opponent_i; i < 8 && way_is_free(opponent_j, opponent_i, opponent_j, i); i++) {
-            if (positionAfterMove[opponent_j][i] == (-5 * (WhiteToMove ? -1 : 1)))
+        //clearLights();
+
+//        for (int i = opponent_i; i < 8 && way_is_free(opponent_j, opponent_i, opponent_j, i); i++) {
+//            if (positionAfterMove[opponent_j][i] == (-5 * (WhiteToMove ? -1 : 1)))
+//                result->setCheck(true);
+//            addLight(opponent_j, i);
+//        }
+
+        for (int i = 0; i <= 8; i++) {
+            if (positionAfterMove[opponent_j][i] == (-5 * (WhiteToMove ? -1 : 1)) && way_is_free(opponent_j, opponent_i, opponent_j, i)) //todo i -> i-1 в конце
                 result->setCheck(true);
+//            addLight(opponent_j, i);
         }
 
-        for (int i = opponent_i; i >= 0 && way_is_free(opponent_j, opponent_i, opponent_j, i); i--) {
-            if (positionAfterMove[opponent_j][i] == (-5 * (WhiteToMove ? -1 : 1)))
-                result->setCheck(true); //не работает на колонке A
-        }
+        // проверка короля
+        if (abs(me_i - opponent_i) <= 1 && abs(me_j - opponent_j) <= 1)
+            return nullptr;
 
         // проверка фигур по вертикали
 

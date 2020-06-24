@@ -15,7 +15,7 @@ Board::Board(int game_id): table(game_id, &handler) {
         sf::Sprite sprite(t_pieces);
         figures.push_back(sprite);
     }
-    table.setPosition(sf::Vector2f(554, 20));
+    table.setPosition(sf::Vector2f(540, 20));
     loadPosition();
 }
 

@@ -97,6 +97,8 @@ private:
         target.draw(background);
         for (int i = 0; i < figures.size(); i++)
             target.draw(figures[i]);
+        for (auto circle: handler.circles)
+            target.draw(circle);
         target.draw(table);
     }
 };

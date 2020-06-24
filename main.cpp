@@ -1,7 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
-#include <cstdlib>
-//#include "ChessHandler.h" - error
 #include "Group.h"
 #include "Board.h"
 #include <string>
