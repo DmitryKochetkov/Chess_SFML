@@ -1,6 +1,6 @@
 # игнорим и вот эти файлы
 Makefile
-CMakeLists.txt
+*.o
 
 # назови папку именно вот так
 /cmake-build
