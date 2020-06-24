@@ -1,6 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include "Group.h"
 #include "Board.h"
+#include "ResourceHolder.h"
+#include "Label.h"
 #include <string>
 
 int main() {
@@ -12,11 +14,10 @@ int main() {
 
     //Загрузка текстур и шрифтов
 
-    sf::Texture t_board_bg;
-    t_board_bg.loadFromFile("../board.png");
-
-    sf::Texture t_pieces; //TODO: move
-    t_pieces.loadFromFile("../pieces_resized.png");
+    ResourceHolder::Instance().loadTexture("../board.png", "board");
+    ResourceHolder::Instance().loadTexture("../pieces_resized.png", "pieces");
+    ResourceHolder::Instance().loadFont("../resources/fonts/PT Sans.ttf", "PT Sans");
+    ResourceHolder::Instance().loadFont("../resources/fonts/font_awesome/fa-solid-900.ttf", "Font Awesome Solid");
 
     //Спрайты
 

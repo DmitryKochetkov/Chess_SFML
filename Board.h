@@ -9,6 +9,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "ChessHandler.h"
+#include "ResourceHolder.h"
 
 class Board : public sf::Drawable {
     ChessHandler handler;
@@ -19,8 +20,6 @@ class Board : public sf::Drawable {
     int border = (board_size - field_size * 8) / 2;
     sf::Texture t_background;
     sf::Texture t_pieces;
-
-    //ChessHandler game; //TODO: move out?
 
     //deprecated variables
 
@@ -38,7 +37,6 @@ public:
     void onLeftMouseButtonReleased();
 
     void onMove() {
-        //figures[moved_piece].setPosition(figures[moved_piece].getPosition() + sf::Vector2f(dx, dy));
         figures[moved_piece].setPosition(sf::Vector2f(initMousePosition.x, initMousePosition.y) + sf::Vector2f(dx, dy));
     }
 
@@ -54,15 +52,17 @@ private:
     public:
         Table(int game_id, ChessHandler* handler) {
             this->handler = handler;
-            font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf");
+            font = ResourceHolder::Instance().getFont("PT Sans");
+            //font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf");
             game_name = sf::Text(L"Партия #" + std::to_wstring(game_id), font);
             game_name.setCharacterSize(22);
+            game_name.setStyle(sf::Text::Bold);
             game_name.setFillColor(sf::Color(0, 0, 0, 255));
             border.setSize(sf::Vector2f(180, 550));
             border.setFillColor(sf::Color(240, 240, 240, 255));
             border.setOutlineColor(sf::Color(255, 255, 255));
             border.setOutlineThickness(1);
-            opponent = sf::Text(L"Соперник: someUser", font, 15);
+            opponent = sf::Text(L"Соперник: someUser", font, 18);
             opponent.setFillColor(sf::Color(0, 0, 0));
         }
 
