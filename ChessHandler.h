@@ -6,7 +6,7 @@ public:
     private:
         int piece;
         int row1, col1, row2, col2;
-        bool eating = false;
+        bool eating = false; //TODO: eating = id фигуры
         bool check = false;
         bool mate = false;
         bool bad = false;

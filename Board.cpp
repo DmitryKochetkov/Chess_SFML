@@ -7,14 +7,9 @@
 
 Board::Board(int game_id): table(game_id, &handler) {
     figures = std::vector<sf::Sprite>();
-    //TODO: загружать текстуры с учетом пользовательских настроек
     t_background.loadFromFile("../board.png");
     t_pieces.loadFromFile("../pieces_resized.png");
 
-    for (int i = 0; i < 32; i++) {
-        sf::Sprite sprite(t_pieces);
-        figures.push_back(sprite);
-    }
     table.setPosition(sf::Vector2f(540, 20));
     loadPosition();
 }
