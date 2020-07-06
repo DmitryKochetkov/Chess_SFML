@@ -2,10 +2,38 @@
 
 class ChessHandler {
 public:
+    class Field {
+    private:
+        int row;
+        int column;
+
+    public:
+        Field(int row, int column) : row(row), column(column) {}
+
+        int getRow() const {
+            return row;
+        }
+
+        void setRow(int row) {
+            if (row > 7 || row < 0) throw std::runtime_error("Incorrect piece coordinates");
+            Field::row = row;
+        }
+
+        int getColumn() const {
+            return column;
+        }
+
+        void setColumn(int column) {
+            if (column > 7 || column < 0) throw std::runtime_error("Incorrect piece coordinates");
+            Field::column = column;
+        }
+    };
+
     class Move {
     private:
         int piece;
-        int row1, col1, row2, col2;
+        Field start;
+        Field destination;
         bool eating = false; //TODO: eating = id фигуры
         bool check = false;
         bool mate = false;
@@ -13,17 +41,10 @@ public:
         bool good = false;
 
     public:
-        Move(int piece, int row1, int col1, int row2, int col2, bool check, bool mate) {
-            if (row1 > 7 || row1 < 0) throw std::runtime_error("Incorrect piece coordinates");
-            if (col1 > 7 || col1 < 0) throw std::runtime_error("Incorrect piece coordinates");
-            if (row2 > 7 || row2 < 0) throw std::runtime_error("Incorrect piece coordinates");
-            if (col2 > 7 || col2 < 0) throw std::runtime_error("Incorrect piece coordinates");
-
+        Move(int piece, Field start, Field destination, bool check, bool mate): start(start), destination(destination) {
             this->piece = piece;
-            this->row1 = row1;
-            this->col1 = col1;
-            this->row2 = row2;
-            this->col2 = col2;
+            this->start = start;
+            this->destination = destination;
         }
 
         void setEating(bool eating) {
@@ -52,16 +73,16 @@ public:
 
                 if (eating)
                     chessNotation += 'x';
-                chessNotation += 'a' + col2;
-                chessNotation += '1' + row2;
+                chessNotation += 'a' + destination.getColumn();
+                chessNotation += '1' + destination.getRow();
             }
             else if (eating) {
-                chessNotation += col1 + 'a';
-                chessNotation += col2 + 'a';
+                chessNotation += start.getColumn() + 'a';
+                chessNotation += start.getColumn() + 'a';
             }
             else {
-                chessNotation += 'a' + col2;
-                chessNotation += '1' + row2;
+                chessNotation += 'a' + destination.getColumn();
+                chessNotation += '1' + destination.getRow();
             }
             if (mate) chessNotation += "#";
             else if (check) chessNotation += "+";
@@ -83,28 +104,20 @@ public:
             return piece;
         }
 
-        int getRow1() const {
-            return row1;
+        const Field &getStart() const {
+            return start;
         }
 
-        int getCol1() const {
-            return col1;
-        }
-
-        int getRow2() const {
-            return row2;
-        }
-
-        int getCol2() const {
-            return col2;
+        const Field &getDestination() const {
+            return destination;
         }
     };
 
     class LongCastlingMove: public Move {
     public:
-        LongCastlingMove(int pieceId, int row1, int col1, int row2, int col2, bool check, bool mate) : Move(pieceId,
-                                                                                                            row1, col1,
-                                                                                                            row2, col2,
+        LongCastlingMove(int pieceId, Field start, Field destination, bool check, bool mate) : Move(pieceId,
+                                                                                                            start,
+                                                                                                            destination,
                                                                                                             check,
                                                                                                             mate) {}
 
@@ -115,9 +128,9 @@ public:
 
     class ShortCastlingMove: public Move {
     public:
-        ShortCastlingMove(int pieceId, int row1, int col1, int row2, int col2, bool check, bool mate) : Move(pieceId,
-                                                                                                             row1, col1,
-                                                                                                             row2, col2,
+        ShortCastlingMove(int pieceId, Field start, Field destination, bool check, bool mate) : Move(pieceId,
+                                                                                                             start,
+                                                                                                             destination,
                                                                                                              check,
                                                                                                              mate) {}
 
@@ -258,7 +271,7 @@ private:
         bool PawnCorrect = ((i2 == i1) && position[j2][i2] == 0 && (j2 == j1 + (WhiteToMove ? 1 : -1))) ||
                             ((abs(i2-i1)==1) && position[j2][i2] != 0 && (j2 == j1 + (WhiteToMove ? 1 : -1))) ||
                             ((i2 == i1) && (j1 == WhiteToMove ? 1 : 5) && (position[j2][i2] == 0) && ((j2 == j1 + (WhiteToMove ? 1 : -1)) || ((j2 == j1 + (WhiteToMove ? 2 : -2)) && way_is_free(i1, j1, i2, j2)))) ||
-                            ((j1 == (WhiteToMove ? 4 : 3) && abs(getLastMove()->getPiece()) == 6 && getLastMove()->getRow1() == (WhiteToMove ? 6 : 1) && abs(getLastMove()->getRow2() - getLastMove()->getRow1()) == 2) && (i2 == getLastMove()->getCol2()) && (j2 == getLastMove()->getRow1() + (WhiteToMove ? -1 : 1))); //взятие на проходе
+                            ((j1 == (WhiteToMove ? 4 : 3) && abs(getLastMove()->getPiece()) == 6 && getLastMove()->getStart().getRow() == (WhiteToMove ? 6 : 1) && abs(getLastMove()->getDestination().getRow() - getLastMove()->getStart().getRow() == 2) && (i2 == getLastMove()->getDestination().getColumn()) && (j2 == getLastMove()->getStart().getRow() + (WhiteToMove ? -1 : 1)))); //взятие на проходе
 
         bool QueenCorrect = BishopCorrect ^ RookCorrect;
 
@@ -286,14 +299,14 @@ private:
                     //change rook position
                     position[j2][i2 - 1] = position[j2][i2 + 1];
                     position[j2][i2 + 1] = 0;
-                    result = new ShortCastlingMove(position[j2][i2], j1, i1, j2, i2, false, false);
+                    result = new ShortCastlingMove(position[j2][i2], Field(j1, i1), Field(j2, i2), false, false);
                     history.push_back(result);
                 }
                 else if (i2 == 2) { //queen side TODO: не помню точно, насколько клеток
                     //change rook position
                     position[j2][i2 + 1] = position[j2][i2 - 2];
                     position[j2][i2 - 2] = 0;
-                    result = new LongCastlingMove(position[j2][i2], j1, i1, j2, i2, false, false);
+                    result = new LongCastlingMove(position[j2][i2], Field(j1, i1), Field(j2, i2), false, false);
                     history.push_back(result);
                 }
 
@@ -353,7 +366,7 @@ private:
             return nullptr;
         }
 
-        result = new Move(position[j1][i1], j1, i1, j2, i2, false, false);
+        result = new Move(position[j1][i1], Field(j1, i1), Field(j2, i2), false, false);
 
         //проверка шаха TODO: рокировку нельзя произвести если стоит шах, проверка шаха должна быть раньше
         bool WhiteKingCheck = false; //1
