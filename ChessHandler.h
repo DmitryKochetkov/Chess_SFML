@@ -78,7 +78,7 @@ public:
             }
             else if (eating) {
                 chessNotation += start.getColumn() + 'a';
-                chessNotation += start.getColumn() + 'a';
+                chessNotation += destination.getColumn() + 'a';
             }
             else {
                 chessNotation += 'a' + destination.getColumn();
