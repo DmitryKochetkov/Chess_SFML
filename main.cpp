@@ -5,6 +5,7 @@
 #include "Group.h"
 #include "Label.h"
 #include "ResourceHolder.h"
+#include "Button.h"
 #include <string>
 
 using namespace sf;
@@ -37,17 +38,19 @@ int main() {
     Group* auth = new Group();
     Group* menu = new Group();
 
-    Label form((sf::Vector2f(window.getSize().y * 0.5f - 100, 50)), L"А тут форма входа");
-    Label login((sf::Vector2f(window.getSize().y * 0.5f - 100, 150)), L"Войти");
-    Label signup((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Регистрация");
-    Label settings_icon((sf::Vector2f(window.getSize().y - 100, 20)), L"\uf013", sf::Vector2f(50, 50));
+    Button form((sf::Vector2f(window.getSize().y * 0.5f - 100, 50)), L"А тут форма входа");
+    Button login((sf::Vector2f(window.getSize().y * 0.5f - 100, 150)), L"Войти");
+    Button signup((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Регистрация");
+    Button settings_icon((sf::Vector2f(window.getSize().y - 100, 20)), L"\uf013", sf::Vector2f(50, 50));
+    Label label((sf::Vector2f(100, 0)), L"Label");
     settings_icon.setFont(ResourceHolder::Instance().getFont("Font Awesome Solid"));
     auth->push_back(form);
     auth->push_back(login);
     auth->push_back(signup);
     auth->push_back(settings_icon);
+    auth->push_back(label);
 
-    Label start((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Начать игру");
+    Button start((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Начать игру");
 
     menu->push_back(start);
     menu->push_back(settings_icon);
