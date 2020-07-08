@@ -21,7 +21,6 @@ Button::Button(const sf::Vector2f position, const std::wstring &text, sf::Vector
     offset.x = (float)this->text.getGlobalBounds().width;
     offset.y = (float)this->text.getGlobalBounds().height/0.5f;
     this->text.setPosition(position+size*0.5f - offset*0.5f);
-    std::cout << this->text.getGlobalBounds().width << std::endl; //TODO: зачем это вообще здесь?
 }
 
 void Button::setFont(sf::Font &font) {
