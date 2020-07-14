@@ -16,6 +16,13 @@ class Button : public sf::Drawable, public IListener {
     sf::RectangleShape body;
     sf::Text text;
 
+    //в наследниках эти стили будут меняться
+    const sf::Color fillColor = sf::Color::White;
+    const sf::Color borderColor = sf::Color::Black;
+    const sf::Color fillColorPressed = sf::Color::Blue; //цвет кнопки при нажатии
+    const sf::Color borderColorHover = sf::Color::Blue; //цвет рамки при наведении
+    const sf::Color textColor = sf::Color::Black;
+
 public:
     //TODO: Vector2f -> Vector2i
     Button(const sf::Vector2f position, const std::wstring& text, const sf::Vector2f size = sf::Vector2f(200, 50));

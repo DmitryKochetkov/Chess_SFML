@@ -14,6 +14,8 @@
 class Label : public sf::Drawable {
     sf::Text text;
 
+    const sf::Color color = sf::Color(0, 0, 0);
+
 public:
     //TODO: Vector2f -> Vector2i
     Label(const sf::Vector2f position, const std::wstring& text, const sf::Vector2f size = sf::Vector2f(200, 50));

@@ -9,7 +9,7 @@ Label::Label(const sf::Vector2f position, const std::wstring &text, sf::Vector2f
     this->text.setFont(ResourceHolder::Instance().getFont("PT Sans"));
     this->text.setCharacterSize(22);
     this->text.setStyle(sf::Text::Bold);
-    this->text.setFillColor(sf::Color(0, 0, 0));
+    this->text.setFillColor(color);
     this->text.setPosition(position);
 }
 
