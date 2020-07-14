@@ -4,7 +4,8 @@
 
 class IListener
 {
+public:
     virtual void handleEvent(sf::Event event) = 0;
-    virtual ~IListener() {};
+    virtual ~IListener() = default;
 };
 #endif
