@@ -66,15 +66,16 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
 
-            if (visible == auth) {
-                if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && login.contains(sf::Mouse::getPosition(window)))
-                    visible = menu;
-            }
-
-            if (visible == menu) {
-                if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && start.contains(sf::Mouse::getPosition(window)))
-                    visible = game_group;
-            }
+//            if (visible == auth) {
+//                if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && login.contains(sf::Mouse::getPosition(window)))
+//                    visible = menu;
+//            }
+//
+//            if (visible == menu) {
+//                if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && start.contains(sf::Mouse::getPosition(window)))
+//                    visible = game_group;
+//            }
+            login.handleEvent(event);
 
         }
 

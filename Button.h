@@ -9,9 +9,10 @@
 #include <iostream>
 #include <cmath>
 #include "ResourceHolder.h"
+#include "IListener.h"
 
 
-class Button : public sf::Drawable {
+class Button : public sf::Drawable, public IListener {
     sf::RectangleShape body;
     sf::Text text;
 
@@ -33,6 +34,11 @@ protected:
         target.draw(body);
         target.draw(text);
     }
+
+public:
+    ~Button() override;
+
+    void handleEvent(sf::Event event) override;
 };
 
 

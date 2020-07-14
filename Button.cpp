@@ -27,6 +27,28 @@ void Button::setFont(sf::Font &font) {
     text.setFont(font);
 }
 
+Button::~Button() {
+
+}
+
+void Button::handleEvent(sf::Event event) {
+    if (event.type == sf::Event::MouseMoved) {
+        if (this->contains(sf::Vector2f(event.mouseMove.x, event.mouseMove.y))) {
+            body.setOutlineColor(sf::Color::Blue);
+        }
+        else {
+            body.setOutlineColor(sf::Color::Black);
+        }
+    }
+
+    if (event.type == sf::Event::MouseButtonPressed) {
+        if (this->contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y))) {
+            body.setFillColor(sf::Color::Blue);
+        }
+    }
+    else body.setFillColor(sf::Color::White);
+}
+
 
 
 
