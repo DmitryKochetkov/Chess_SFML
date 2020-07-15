@@ -6,6 +6,7 @@
 #include "Label.h"
 #include "ResourceHolder.h"
 #include "Button.h"
+#include "TextField.h"
 #include <string>
 
 using namespace sf;
@@ -38,7 +39,7 @@ int main() {
     Group* auth = new Group();
     Group* menu = new Group();
 
-    Button form((sf::Vector2f(window.getSize().y * 0.5f - 100, 50)), L"А тут форма входа");
+    TextField form(sf::Vector2f(window.getSize().y * 0.5f - 100, 50), "А тут форма входа"); //
     Button login((sf::Vector2f(window.getSize().y * 0.5f - 100, 150)), L"Войти");
     Button signup((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Регистрация");
     Button settings_icon((sf::Vector2f(window.getSize().y - 100, 20)), L"\uf013", sf::Vector2f(50, 50));
@@ -69,6 +70,7 @@ int main() {
             if (visible == auth) {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && login.contains(sf::Mouse::getPosition(window)))
                     visible = menu;
+                form.handleEvent(event);
             }
 
             if (visible == menu) {
