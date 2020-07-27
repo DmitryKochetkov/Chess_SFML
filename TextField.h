@@ -17,23 +17,15 @@ protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
 private:
-	
-
 	sf::Text txt;
 	sf::RectangleShape box;
 	sf::RectangleShape caret;
-
-	int size;
-
-	int length;
 
 	bool renderPlaceholder;
 
 	void setActive(bool arg);
 
 	bool active;
-
-	sf::Vector2f pos;
 
 	std::string placeholder;
 

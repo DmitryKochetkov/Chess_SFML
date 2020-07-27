@@ -21,15 +21,10 @@ TextField::TextField(sf::Vector2f pos, std::string str) {
 	renderPlaceholder = true;
 	setActive(false);
 
-	caret.setSize(sf::Vector2f(40, 3)); //кусор 
+	caret.setSize(sf::Vector2f(40, 3)); //пїЅпїЅпїЅпїЅпїЅ 
 	caret.setFillColor(sf::Color::Black);
 	caret.setPosition(txt.getPosition());
 	caret.setRotation(90);
-
-
-
-	size = 16;
-	length = 0;
 }
 
 
@@ -69,37 +64,52 @@ void TextField::handleEvent(sf::Event event) {
 	}
 
 	if (event.type == sf::Event::TextEntered && active) {
-		sf::String str = txt.getString();
+        if (event.text.unicode > 32 && event.text.unicode < 127) {
+            txt.setString(txt.getString() + event.text.unicode);
 
+        }
+        else if (event.text.unicode == '\b'){
+            txt.setString(txt.getString().substring(0, txt.getString().getSize() - 1));
+        }
 
+        double x = txt.getLocalBounds().width + 5;
+        if (x > box.getSize().x)
+            x = box.getSize().x - 5;
+        caret.setPosition(txt.getPosition() + sf::Vector2f(x, 0));
 
-		if (event.text.unicode > 32 && event.text.unicode < 127) {
-			if (str.getSize() < 17) //не работет. вылетает за границы
-				caret.setPosition(caret.getPosition() + sf::Vector2f(13, 0));
-
-
-			if (event.text.unicode == '\b') { //backspace
-				if (str.getSize() > 0) {
-					length--;
-					str = str.substring(0, str.getSize() - 1);
-					caret.setPosition(caret.getPosition() - sf::Vector2f(13, 0));
-				}
-			}
-			else if (event.text.unicode == '\e') { //escape
-				setActive(false);
-			}
-			else {
-				sf::String sfstr = "";
-				sfstr += event.text.unicode;
-				str += sfstr.toAnsiString(); //чего тут
-			}
-
-			if (str.getSize() == size) return;
-
-			txt.setString(str);
-			length++;
-		}
+        //TODO: escape; setActive РїРѕ РєР»РёРєСѓ
 	}
+
+//	if (event.type == sf::Event::TextEntered && active) {
+//		sf::String str = txt.getString();
+//
+//		if (event.text.unicode > 32 && event.text.unicode < 127) {
+//			if (str.getSize() < 17) //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//				caret.setPosition(caret.getPosition() + sf::Vector2f(13, 0));
+//
+//
+//			if (event.text.unicode == '\b') { //backspace
+//				if (str.getSize() > 0) {
+//					length--;
+//					str = str.substring(0, str.getSize() - 1);
+//					caret.setPosition(caret.getPosition() - sf::Vector2f(13, 0));
+//				}
+//			}
+//			else if (event.text.unicode == '\e') { //escape
+//				setActive(false);
+//			}
+//			else {
+//				sf::String sfstr = "";
+//				sfstr += event.text.unicode;
+//				str += sfstr.toAnsiString(); //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
+//			}
+//
+//			if (str.getSize() == size) return;
+//
+//			txt.setString(str);
+//			length++;
+//		}
+//	}
 }
 
 TextField::~TextField() {

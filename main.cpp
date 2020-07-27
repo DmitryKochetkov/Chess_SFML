@@ -39,13 +39,15 @@ int main() {
     Group* auth = new Group();
     Group* menu = new Group();
 
-    TextField form(sf::Vector2f(window.getSize().y * 0.5f - 100, 50), "А тут форма входа"); //
+    TextField form_login(sf::Vector2f(window.getSize().y * 0.5f - 100, 50), "Login");
+    //TextField form_password(sf::Vector2f(window.getSize().y * 0.5f - 100, 50), "Password");
     Button login((sf::Vector2f(window.getSize().y * 0.5f - 100, 150)), L"Войти");
     Button signup((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Регистрация");
     Button settings_icon((sf::Vector2f(window.getSize().y - 100, 20)), L"\uf013", sf::Vector2f(50, 50));
     Label label((sf::Vector2f(100, 0)), L"Label");
     settings_icon.setFont(ResourceHolder::Instance().getFont("Font Awesome Solid"));
-    auth->push_back(form);
+    auth->push_back(form_login);
+    //auth->push_back(form_password);
     auth->push_back(login);
     auth->push_back(signup);
     auth->push_back(settings_icon);
@@ -70,7 +72,8 @@ int main() {
             if (visible == auth) {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && login.contains(sf::Mouse::getPosition(window)))
                     visible = menu;
-                form.handleEvent(event);
+                form_login.handleEvent(event);
+                //form_password.handleEvent(event);
             }
 
             if (visible == menu) {
