@@ -18,16 +18,13 @@ protected:
 
 private:
 	sf::Text txt;
+	sf::Text placeholder;
 	sf::RectangleShape box;
 	sf::RectangleShape caret;
-
-	bool renderPlaceholder;
 
 	void setActive(bool arg);
 
 	bool active;
-
-	std::string placeholder;
 
 public:
 	void handleEvent(sf::Event event) override;

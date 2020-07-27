@@ -10,15 +10,17 @@ TextField::TextField(sf::Vector2f pos, std::string str) {
 	box.setFillColor(sf::Color::White);
 	box.setOutlineThickness(3);
 
-	placeholder = str;
+	placeholder.setPosition(pos + sf::Vector2f(10, 5));
+	placeholder.setString(str);
+    placeholder.setFont(ResourceHolder::Instance().getFont("PT Sans"));
+	placeholder.setFillColor(sf::Color(0, 0, 0, 128));
+	placeholder.setCharacterSize(24);
 
 	txt.setPosition(pos + sf::Vector2f(5, 5));
 	txt.setFont(ResourceHolder::Instance().getFont("PT Sans"));
 	txt.setCharacterSize(24);
 	txt.setFillColor(sf::Color::Black);
-	txt.setString(placeholder);
 
-	renderPlaceholder = true;
 	setActive(false);
 
 	caret.setSize(sf::Vector2f(40, 3)); //����� 
@@ -29,10 +31,12 @@ TextField::TextField(sf::Vector2f pos, std::string str) {
 
 
 void TextField::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-		target.draw(box);
-		target.draw(txt);
-		target.draw(caret);
-	}
+    target.draw(box);
+    if (txt.getString() == "")
+        target.draw(placeholder);
+    else target.draw(txt);
+    target.draw(caret);
+}
 
 
 void TextField::setActive(bool arg) {
@@ -43,13 +47,6 @@ void TextField::setActive(bool arg) {
 	else {
 		box.setOutlineColor(sf::Color::Black);
 	}
-
-	if (renderPlaceholder && arg) {
-		renderPlaceholder = false;
-		txt.setString("");
-		txt.setFillColor(sf::Color::Black);
-	}
-
 }
 
 void TextField::handleEvent(sf::Event event) {
