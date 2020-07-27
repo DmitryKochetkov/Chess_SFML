@@ -50,14 +50,9 @@ void TextField::setActive(bool arg) {
 }
 
 void TextField::handleEvent(sf::Event event) {
-	if (event.type == sf::Event::MouseMoved) {
-		sf::Vector2f pos(event.mouseMove.x, event.mouseMove.y);
-		if (box.getGlobalBounds().contains(pos)) {
-			setActive(true);
-		}
-		else {
-			setActive(false);
-		}
+	if (event.type == sf::Event::MouseButtonPressed) {
+		sf::Vector2f pos(event.mouseButton.x, event.mouseButton.y);
+        setActive(box.getGlobalBounds().contains(pos));
 	}
 
 	if (event.type == sf::Event::TextEntered && active) {
@@ -68,45 +63,16 @@ void TextField::handleEvent(sf::Event event) {
         else if (event.text.unicode == '\b'){
             txt.setString(txt.getString().substring(0, txt.getString().getSize() - 1));
         }
+        else {
+            setActive(false);
+            return;
+        }
 
         double x = txt.getLocalBounds().width + 5;
         if (x > box.getSize().x)
             x = box.getSize().x - 5;
         caret.setPosition(txt.getPosition() + sf::Vector2f(x, 0));
-
-        //TODO: escape; setActive по клику
 	}
-
-//	if (event.type == sf::Event::TextEntered && active) {
-//		sf::String str = txt.getString();
-//
-//		if (event.text.unicode > 32 && event.text.unicode < 127) {
-//			if (str.getSize() < 17) //�� �������. �������� �� �������
-//				caret.setPosition(caret.getPosition() + sf::Vector2f(13, 0));
-//
-//
-//			if (event.text.unicode == '\b') { //backspace
-//				if (str.getSize() > 0) {
-//					length--;
-//					str = str.substring(0, str.getSize() - 1);
-//					caret.setPosition(caret.getPosition() - sf::Vector2f(13, 0));
-//				}
-//			}
-//			else if (event.text.unicode == '\e') { //escape
-//				setActive(false);
-//			}
-//			else {
-//				sf::String sfstr = "";
-//				sfstr += event.text.unicode;
-//				str += sfstr.toAnsiString(); //���� ���
-//			}
-//
-//			if (str.getSize() == size) return;
-//
-//			txt.setString(str);
-//			length++;
-//		}
-//	}
 }
 
 TextField::~TextField() {
