@@ -23,9 +23,9 @@ TextField::TextField(sf::Vector2f pos, std::wstring str) {
 
 	setActive(false);
 
-	caret.setSize(sf::Vector2f(40, 3));
+	caret.setSize(sf::Vector2f(35, 3));
 	caret.setFillColor(sf::Color::Black);
-	caret.setPosition(txt.getPosition());
+	caret.setPosition(txt.getPosition() + sf::Vector2f(5, 0));
 	caret.setRotation(90);
 }
 
