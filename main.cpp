@@ -39,8 +39,8 @@ int main() {
     Group* auth = new Group();
     Group* menu = new Group();
 
-    TextField form_login(sf::Vector2f(window.getSize().y * 0.5f - 100, 50), L"Логин");
-    TextField form_password(sf::Vector2f(window.getSize().y * 0.5f - 100, 120), L"Пароль");
+    TextField form_login(sf::Vector2f(window.getSize().y * 0.5f - 100, 50), L"Логин", TextField::Mode::LOGIN);
+    TextField form_password(sf::Vector2f(window.getSize().y * 0.5f - 100, 120), L"Пароль", TextField::Mode::PASSWORD);
     Button login((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Войти");
     Button signup((sf::Vector2f(window.getSize().y * 0.5f - 100, 350)), L"Регистрация");
     Button settings_icon((sf::Vector2f(window.getSize().y - 100, 20)), L"\uf013", sf::Vector2f(50, 50));
@@ -83,7 +83,6 @@ int main() {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && start.contains(sf::Mouse::getPosition(window)))
                     visible = game_group;
             }
-
         }
 
         window.clear();

@@ -4,7 +4,7 @@
 
 #include "TextField.h"
 
-TextField::TextField(sf::Vector2f pos, std::wstring str) {
+TextField::TextField(sf::Vector2f pos, std::wstring str, Mode mode) {
 	box.setPosition(pos);
 	box.setSize(sf::Vector2f(200, 50));
 	box.setFillColor(sf::Color::White);
@@ -27,12 +27,14 @@ TextField::TextField(sf::Vector2f pos, std::wstring str) {
 	caret.setFillColor(sf::Color::Black);
 	caret.setPosition(txt.getPosition() + sf::Vector2f(5, 0));
 	caret.setRotation(90);
+
+	this->mode = mode;
 }
 
 
 void TextField::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(box);
-    if (txt.getString() == "")
+    if (content.empty())
         target.draw(placeholder);
     else target.draw(txt);
     if (this->active && caretVisible)
@@ -59,7 +61,7 @@ void TextField::handleEvent(sf::Event event) {
 	if (event.type == sf::Event::TextEntered && active) {
         switch (event.text.unicode) {
             case '\b':
-                txt.setString(txt.getString().substring(0, txt.getString().getSize() - 1));
+                content = content.substr(0, content.size() - 1);
                 break;
 
             case 27:
@@ -70,9 +72,16 @@ void TextField::handleEvent(sf::Event event) {
                 break;
 
             default:
-                txt.setString(txt.getString() + event.text.unicode);
+                content += event.text.unicode;
         }
 
+        if (mode == Mode::PASSWORD) {
+            std::wstring hidden_password;
+            for (int i = 0; i < content.length(); i++)
+                hidden_password += passwordChar;
+            txt.setString(sf::String(hidden_password));
+        }
+        else txt.setString(sf::String(content));
 
         double x = txt.getLocalBounds().width + 5;
         if (x > box.getSize().x)
