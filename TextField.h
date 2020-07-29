@@ -26,8 +26,12 @@ private:
 
 	bool active;
 
+	sf::Clock blinking;
+	bool caretVisible = true;
+
 public:
 	void handleEvent(sf::Event event) override;
+	void blink();
 
 	TextField(sf::Vector2f pos, std::wstring str);
 

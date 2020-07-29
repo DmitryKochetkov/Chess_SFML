@@ -35,7 +35,7 @@ void TextField::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     if (txt.getString() == "")
         target.draw(placeholder);
     else target.draw(txt);
-    if (this->active)
+    if (this->active && caretVisible)
         target.draw(caret);
 }
 
@@ -83,4 +83,13 @@ void TextField::handleEvent(sf::Event event) {
 
 TextField::~TextField() {
 
+}
+
+void TextField::blink() {
+    if (active) {
+        if (blinking.getElapsedTime().asMilliseconds() > 500) {
+            caretVisible = !caretVisible;
+            blinking.restart();
+        }
+    }
 }

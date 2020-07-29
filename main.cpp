@@ -63,6 +63,9 @@ int main() {
 
     while (window.isOpen())
     {
+        form_login.blink();
+        form_password.blink();
+
         sf::Event event;
         while (window.pollEvent(event))
         {
