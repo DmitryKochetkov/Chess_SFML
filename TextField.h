@@ -29,7 +29,7 @@ private:
 public:
 	void handleEvent(sf::Event event) override;
 
-	TextField(sf::Vector2f pos, std::string str);
+	TextField(sf::Vector2f pos, std::wstring str);
 
 	template <class T>
 	bool contains(sf::Vector2<T> point) {

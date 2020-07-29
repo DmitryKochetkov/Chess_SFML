@@ -39,7 +39,7 @@ int main() {
     Group* auth = new Group();
     Group* menu = new Group();
 
-    TextField form_login(sf::Vector2f(window.getSize().y * 0.5f - 100, 50), "Login");
+    TextField form_login(sf::Vector2f(window.getSize().y * 0.5f - 100, 50), L"Логин");
     //TextField form_password(sf::Vector2f(window.getSize().y * 0.5f - 100, 50), "Password");
     Button login((sf::Vector2f(window.getSize().y * 0.5f - 100, 150)), L"Войти");
     Button signup((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Регистрация");

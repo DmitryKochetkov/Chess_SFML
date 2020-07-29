@@ -4,7 +4,7 @@
 
 #include "TextField.h"
 
-TextField::TextField(sf::Vector2f pos, std::string str) {
+TextField::TextField(sf::Vector2f pos, std::wstring str) {
 	box.setPosition(pos);
 	box.setSize(sf::Vector2f(200, 50));
 	box.setFillColor(sf::Color::White);
