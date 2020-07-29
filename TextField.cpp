@@ -23,7 +23,7 @@ TextField::TextField(sf::Vector2f pos, std::wstring str) {
 
 	setActive(false);
 
-	caret.setSize(sf::Vector2f(40, 3)); //����� 
+	caret.setSize(sf::Vector2f(40, 3));
 	caret.setFillColor(sf::Color::Black);
 	caret.setPosition(txt.getPosition());
 	caret.setRotation(90);
@@ -35,7 +35,8 @@ void TextField::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     if (txt.getString() == "")
         target.draw(placeholder);
     else target.draw(txt);
-    target.draw(caret);
+    if (this->active)
+        target.draw(caret);
 }
 
 
