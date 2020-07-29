@@ -56,17 +56,22 @@ void TextField::handleEvent(sf::Event event) {
 	}
 
 	if (event.type == sf::Event::TextEntered && active) {
-        if (event.text.unicode > 32 && event.text.unicode < 127) {
-            txt.setString(txt.getString() + event.text.unicode);
+        switch (event.text.unicode) {
+            case '\b':
+                txt.setString(txt.getString().substring(0, txt.getString().getSize() - 1));
+                break;
 
+            case 27:
+                setActive(false);
+                break;
+
+            case '\t':
+                break;
+
+            default:
+                txt.setString(txt.getString() + event.text.unicode);
         }
-        else if (event.text.unicode == '\b'){
-            txt.setString(txt.getString().substring(0, txt.getString().getSize() - 1));
-        }
-        else {
-            setActive(false);
-            return;
-        }
+
 
         double x = txt.getLocalBounds().width + 5;
         if (x > box.getSize().x)
