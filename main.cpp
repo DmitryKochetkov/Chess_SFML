@@ -45,7 +45,7 @@ int main() {
     Button settings_icon((sf::Vector2f(window.getSize().y - 100, 20)), L"\uf013", sf::Vector2f(50, 50));
     Label label((sf::Vector2f(100, 0)), L"Label");
     settings_icon.setFont(ResourceHolder::Instance().getFont("Font Awesome Solid"));
-    CheckBox checkBox(sf::Vector2f(50, 50));
+    CheckBox checkBox(sf::Vector2f(200, 450), "Turn something on");
     auth->push_back(form);
     auth->push_back(login);
     auth->push_back(signup);

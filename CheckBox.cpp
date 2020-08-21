@@ -5,7 +5,7 @@
 #include "CheckBox.h"
 #include "ResourceHolder.h"
 
-CheckBox::CheckBox(const sf::Vector2f position) {
+CheckBox::CheckBox(const sf::Vector2f position, std::string text) {
     body = sf::RectangleShape(sf::Vector2f(20, 20));
     body.setPosition(position);
     body.setOutlineColor(sf::Color(0, 0, 0, 255));
@@ -19,6 +19,12 @@ CheckBox::CheckBox(const sf::Vector2f position) {
     offset.x = (float)this->tick.getGlobalBounds().width;
     offset.y = (float)this->tick.getGlobalBounds().height/0.5f;
     this->tick.setPosition(position+body.getSize()*0.5f - offset*0.5f);
+
+    this->text.setString(text);
+    this->text.setFillColor(sf::Color(0, 0, 0, 255));
+    this->text.setFont(ResourceHolder::Instance().getFont("PT Sans"));
+    this->text.setCharacterSize(15);
+    this->text.setPosition(position + sf::Vector2f(body.getSize().x + 10, 0));
 }
 
 void CheckBox::draw(sf::RenderTarget &target, sf::RenderStates states) const {
@@ -26,11 +32,13 @@ void CheckBox::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     if (checked) {
         target.draw(tick);
     }
+    if (this->text.getString() != "")
+        target.draw(text);
 }
 
 void CheckBox::handleEvent(sf::Event event) {
     if (event.type == sf::Event::MouseButtonPressed) {
-        if (body.getGlobalBounds().contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y))) {
+        if (this->contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y))) {
             checked = !checked;
         }
     }
