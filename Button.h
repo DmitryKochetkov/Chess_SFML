@@ -9,11 +9,19 @@
 #include <iostream>
 #include <cmath>
 #include "ResourceHolder.h"
+#include "IListener.h"
 
 
-class Button : public sf::Drawable {
+class Button : public sf::Drawable, public IListener {
     sf::RectangleShape body;
     sf::Text text;
+
+    //в наследниках эти стили будут меняться
+    const sf::Color fillColor = sf::Color::White;
+    const sf::Color borderColor = sf::Color::Black;
+    const sf::Color fillColorPressed = sf::Color::Blue; //цвет кнопки при нажатии
+    const sf::Color borderColorHover = sf::Color::Blue; //цвет рамки при наведении
+    const sf::Color textColor = sf::Color::Black;
 
 public:
     //TODO: Vector2f -> Vector2i
@@ -33,6 +41,11 @@ protected:
         target.draw(body);
         target.draw(text);
     }
+
+public:
+    ~Button() override;
+
+    void handleEvent(sf::Event event) override;
 };
 
 

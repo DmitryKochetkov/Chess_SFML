@@ -67,11 +67,11 @@ int main() {
                 window.close();
 
             if (visible == auth) {
+                login.handleEvent(event);
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && login.contains(sf::Mouse::getPosition(window)))
                     visible = menu;
             }
-
-            if (visible == menu) {
+            else if (visible == menu) {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && start.contains(sf::Mouse::getPosition(window)))
                     visible = game_group;
             }

@@ -7,15 +7,15 @@
 Button::Button(const sf::Vector2f position, const std::wstring &text, sf::Vector2f size) {
     body = sf::RectangleShape(size);
     body.setPosition(position);
-    body.setFillColor(sf::Color(255, 255, 255, 255));
-    body.setOutlineColor(sf::Color(0, 0, 0));
+    body.setFillColor(fillColor);
+    body.setOutlineColor(borderColor);
     body.setOutlineThickness(1.5f);
 
     this->text.setString(sf::String(text));
     this->text.setFont(ResourceHolder::Instance().getFont("PT Sans"));
     this->text.setCharacterSize(22);
     this->text.setStyle(sf::Text::Bold);
-    this->text.setFillColor(sf::Color(0, 0, 0));
+    this->text.setFillColor(textColor);
 
     sf::Vector2f offset;
     offset.x = (float)this->text.getGlobalBounds().width;
@@ -25,6 +25,28 @@ Button::Button(const sf::Vector2f position, const std::wstring &text, sf::Vector
 
 void Button::setFont(sf::Font &font) {
     text.setFont(font);
+}
+
+Button::~Button() {
+
+}
+
+void Button::handleEvent(sf::Event event) {
+    if (event.type == sf::Event::MouseMoved) {
+        if (this->contains(sf::Vector2f(event.mouseMove.x, event.mouseMove.y))) {
+            body.setOutlineColor(borderColorHover);
+        }
+        else {
+            body.setOutlineColor(borderColor);
+        }
+    }
+
+    if (event.type == sf::Event::MouseButtonPressed) {
+        if (this->contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y))) {
+            body.setFillColor(fillColorPressed);
+        }
+    }
+    else body.setFillColor(fillColor);
 }
 
 
