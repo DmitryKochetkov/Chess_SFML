@@ -1,0 +1,10 @@
+#ifndef CHESS_SFML_NOTIFICATION_H
+#define CHESS_SFML_NOTIFICATION_H
+
+
+class Notification {
+
+};
+
+
+#endif //CHESS_SFML_NOTIFICATION_H
