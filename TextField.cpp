@@ -102,3 +102,7 @@ void TextField::blink() {
         }
     }
 }
+
+std::wstring TextField::getContent() {
+    return content;
+}

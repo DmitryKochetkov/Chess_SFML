@@ -52,6 +52,8 @@ public:
 	}
 
     ~TextField() override;
+
+	std::wstring getContent();
 };
 
 
