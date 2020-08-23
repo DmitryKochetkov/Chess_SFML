@@ -52,7 +52,7 @@ int main() {
     auth->push_back(label);
 
     Button start((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Начать игру");
-    Notification notification(Notification::NotificationType::ERROR, L"error log");
+    Notification notification(Notification::NotificationType::ERROR, L"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla auctor volutpat tristique. Nulla pretium semper lacus nec porttitor. Nam dignissim massa tellus. Morbi molestie orci ligula. Etiam enim magna, molestie et euismod id, sodales eu sem. Fusce gravida tortor id pharetra condimentum. Vivamus tincidunt ligula et dolor tincidunt faucibus. Integer sed feugiat diam. Praesent commodo eleifend laoreet. Aenean sed odio ultrices, porta dui non, blandit libero. Morbi pulvinar non magna quis ornare. Mauris sit amet massa et sem eleifend faucibus. Proin eget arcu dignissim augue fermentum semper. Pellentesque sit amet pulvinar eros, et fermentum sem. Nunc suscipit erat facilisis sem commodo bibendum ac lobortis arcu.");
     auth->push_back(notification);
 
     menu->push_back(start);

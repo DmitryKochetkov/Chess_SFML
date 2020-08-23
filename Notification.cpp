@@ -31,5 +31,28 @@ Notification::Notification(Notification::NotificationType type, std::wstring con
     text.setCharacterSize(15);
     text.setPosition(sf::Vector2f((504 - 300)/2, 5));
     text.setFillColor(sf::Color(0, 0, 0));
-    text.setString(content);
+
+    std::vector<std::wstring> words;
+    while (content.length() > 0) {
+        std::wstring word;
+        int pos = content.find_first_of(' ');
+        if (pos == std::wstring::npos) {
+            word = content;
+            content = L"";
+        }
+        else word = content.substr(0, pos);
+        words.push_back(word);
+        content = content.substr(pos + 1, content.length() - 1);
+    }
+
+    for (auto word: words) {
+        sf::Text new_text(text);
+        new_text.setString(text.getString() + word + " ");
+        if (new_text.getGlobalBounds().height > body.getGlobalBounds().height) {
+            break;
+        }
+        if (new_text.getGlobalBounds().width > body.getGlobalBounds().width)
+            text.setString(text.getString() + L"\n" + word + " ");
+        else text = new_text;
+    }
 }

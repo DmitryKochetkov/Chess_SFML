@@ -5,6 +5,7 @@
 
 class Notification: public sf::Drawable {
 protected:
+    //std::vector<sf::Text> lines;
     sf::Text text;
     sf::RectangleShape body;
 
