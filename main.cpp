@@ -6,6 +6,7 @@
 #include "Label.h"
 #include "ResourceHolder.h"
 #include "Button.h"
+#include "Notification.h"
 #include <string>
 
 using namespace sf;
@@ -51,6 +52,8 @@ int main() {
     auth->push_back(label);
 
     Button start((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Начать игру");
+    Notification notification(Notification::NotificationType::ERROR, L"error log");
+    auth->push_back(notification);
 
     menu->push_back(start);
     menu->push_back(settings_icon);
