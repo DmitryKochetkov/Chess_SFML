@@ -25,7 +25,7 @@ protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
 private:
-    const wchar_t passwordChar = '*';
+    const wchar_t passwordChar = L'\u2022';
     std::wstring content;
 	sf::Text txt;
 	sf::Text placeholder;
