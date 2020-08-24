@@ -18,14 +18,15 @@ Notification::Notification(Notification::NotificationType type, std::wstring con
 
     switch (type) {
         case ERROR:
-            body.setFillColor(sf::Color(255, 181, 181));
+            color = sf::Color(255, 181, 181);
             break;
 
         default:
         case INFO:
-            body.setFillColor(sf::Color(181, 196, 255));
+            color = sf::Color(181, 196, 255);
             break;
     }
+    body.setFillColor(color);
 
     text.setFont(ResourceHolder::Instance().getFont("PT Sans"));
     text.setCharacterSize(15);
@@ -55,4 +56,23 @@ Notification::Notification(Notification::NotificationType type, std::wstring con
             text.setString(text.getString() + L"\n" + word + " ");
         else text = new_text;
     }
+}
+
+void Notification::setTransparent(bool transparent) {
+    if (transparent) {
+        color.a = 100;
+        text.setFillColor(sf::Color(0, 0, 0, 100));
+    }
+    else {
+        color.a = 255;
+        text.setFillColor(sf::Color(0, 0, 0, 255));
+    }
+    body.setFillColor(color);
+}
+
+void Notification::handleEvent(sf::Event event) {
+    if (event.type == sf::Event::MouseMoved)
+        if (body.getGlobalBounds().contains(sf::Vector2f(event.mouseMove.x, event.mouseMove.y))) {
+            clock.restart();
+        }
 }

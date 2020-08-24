@@ -2,14 +2,19 @@
 #define CHESS_SFML_NOTIFICATION_H
 
 #include <SFML/Graphics.hpp>
+#include "IListener.h"
 
-class Notification: public sf::Drawable {
-protected:
-    //std::vector<sf::Text> lines;
+class Notification: public sf::Drawable, public IListener {
+private:
     sf::Text text;
     sf::RectangleShape body;
+    sf::Color color;
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+
+    sf::Clock clock;
+    void setTransparent(bool transparent);
+
 
 public:
     enum NotificationType {
@@ -18,6 +23,14 @@ public:
     };
 
     Notification(NotificationType type, std::wstring content);
+
+    void animation() {
+        if (clock.getElapsedTime().asMilliseconds() > 3000)
+            setTransparent(true);
+        else setTransparent(false);
+    }
+
+    void handleEvent(sf::Event event) override;
 };
 
 
