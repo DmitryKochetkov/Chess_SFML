@@ -42,13 +42,15 @@ int main() {
             //TODO: for (auto obejct: screen) object.handle_event(event); - так будет выглядеть этот while, если мы удосужимся сделать класс Screen
 
             //drag and drop
+            //TODO: use IListener for handling this events (after merge)
             if (event.type == sf::Event::MouseButtonPressed && event.key.code == sf::Mouse::Left)
                 board.onMouseButtonPressed(window);
 
             if (event.type == sf::Event::MouseButtonReleased && event.key.code == sf::Mouse::Left)
                 board.onLeftMouseButtonReleased();
         }
-        if (board.isMove)
+        //TODO: custom event
+        if (board.isMove())
             board.onMove();
 
         window->clear();

@@ -20,15 +20,15 @@ class Board : public sf::Drawable {
     int border = (board_size - field_size * 8) / 2;
     sf::Texture t_background;
     sf::Texture t_pieces;
+    ChessHandler::Field* startField = nullptr;
+    ChessHandler::Field* destinationField = nullptr;
 
-    //deprecated variables
-
-    char move[4];
     int moved_piece;
     float dx = 0, dy = 0;
+    bool moving = false;
 
 public:
-    bool isMove = false;
+
     Board(int game_id);
     sf::Vector2i initMousePosition;
 
@@ -36,6 +36,7 @@ public:
     void onMouseButtonPressed(sf::RenderWindow* window);
     void onLeftMouseButtonReleased();
 
+    bool isMove() { return moving; }
     void onMove() {
         figures[moved_piece].setPosition(sf::Vector2f(initMousePosition.x, initMousePosition.y) + sf::Vector2f(dx, dy));
     }

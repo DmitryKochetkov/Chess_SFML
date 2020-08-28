@@ -8,7 +8,10 @@ public:
         int column;
 
     public:
-        Field(int row, int column) : row(row), column(column) {}
+        Field(int row, int column) {
+            setRow(row);
+            setColumn(column);
+        }
 
         int getRow() const {
             return row;
@@ -26,6 +29,13 @@ public:
         void setColumn(int column) {
             if (column > 7 || column < 0) throw std::runtime_error("Incorrect piece coordinates");
             Field::column = column;
+        }
+
+        std::string toString() const {
+            char f[2];
+            f[0] = 'a' + row;
+            f[1] = '1' + column;
+            return std::string(f);
         }
     };
 
@@ -398,7 +408,7 @@ private:
             me_i = findBlackKing(positionAfterMove).second;
         }
 
-        // проверка фигур по горизонтали
+        // check attack my king horizontally
         for (int i = me_i; i < 8 && way_is_free(me_j, me_i, me_j, i); i++) {
             if (positionAfterMove[me_j][i] == (5 * (WhiteToMove ? -1 : 1)))
                 return nullptr;
@@ -408,27 +418,19 @@ private:
 
         }
 
-        //clearLights();
-
-//        for (int i = opponent_i; i < 8 && way_is_free(opponent_j, opponent_i, opponent_j, i); i++) {
-//            if (positionAfterMove[opponent_j][i] == (-5 * (WhiteToMove ? -1 : 1)))
-//                result->setCheck(true);
-//            addLight(opponent_j, i);
-//        }
-
+        // check attack opponent king horizontally
         for (int i = 0; i <= 8; i++) {
             if (positionAfterMove[opponent_j][i] == (-5 * (WhiteToMove ? -1 : 1)) && way_is_free(opponent_j, opponent_i, opponent_j, i)) //todo i -> i-1 в конце
                 result->setCheck(true);
-//            addLight(opponent_j, i);
         }
 
-        // проверка короля
+        // check kings distance
         if (abs(me_i - opponent_i) <= 1 && abs(me_j - opponent_j) <= 1)
             return nullptr;
 
-        // проверка фигур по вертикали
+        // TODO: check attack kings vertically
 
-        // проверка фигур по диагонали
+        // check attack kings diagonally
         for (int i = opponent_i, j = opponent_j; i < 8 && j < 8; i++, j++) {
             if ((positionAfterMove[j][i] == (-3 * (WhiteToMove ? -1 : 1))) ||
                 (positionAfterMove[j][i] == (-2 * (WhiteToMove ? -1 : 1)))) {
@@ -443,7 +445,7 @@ private:
             }
         }
 
-        //проверка коней
+        // check kings attacks by knights
         if ((onBoard(me_j + 2) && onBoard(me_i + 1) && positionAfterMove[me_j + 2][me_i + 1] == 4 * (WhiteToMove ? -1 : 1)) ||
             (onBoard(me_j + 2) && onBoard(me_i - 1) && positionAfterMove[me_j + 2][me_i - 1] == 4 * (WhiteToMove ? -1 : 1)) ||
             (onBoard(me_j - 2) && onBoard(me_i + 1) && positionAfterMove[me_j - 2][me_i + 1] == 4 * (WhiteToMove ? -1 : 1)) ||
@@ -463,7 +465,8 @@ private:
             (onBoard(opponent_j - 1) && onBoard(opponent_i + 2) && positionAfterMove[opponent_j - 1][opponent_i + 2] == -4 * (WhiteToMove ? -1 : 1)) ||
             (onBoard(opponent_j - 1) && onBoard(opponent_i - 2) && positionAfterMove[opponent_j - 1][opponent_i - 2] == -4 * (WhiteToMove ? -1 : 1)))
             result->setCheck(true);
-        // проверка пешек
+
+        // TODO: check kings attack by pawns
 
         if (position[j2][i2] != 0)
             result->setEating(true);
@@ -476,8 +479,18 @@ private:
         return getLastMove();
     }
 
-    bool get_WhiteToMove() {return WhiteToMove;}
-    int get_cell(int row, int column) {return position[row][column];}
+    const Move* move(Field start, Field destination) {
+        char m[4];
+        m[0] = start.toString()[0];
+        m[1] = start.toString()[1];
+        m[2] = destination.toString()[0];
+        m[3] = destination.toString()[1];
+        return move(m);
+    }
+
+
+    bool isWhiteToMove() const {return WhiteToMove;}
+    int getCell(int row, int column) {return position[row][column];}
     //Move getMove(int id) { return history.at(id); }
     const Move* getLastMove() { if (history.empty()) return nullptr; return history.back(); }
     std::string getHistoryString() {
