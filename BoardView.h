@@ -2,8 +2,8 @@
 // Created by dimedrol on 18.04.2020.
 //
 
-#ifndef CHESS_SFML_BOARD_H
-#define CHESS_SFML_BOARD_H
+#ifndef CHESS_SFML_BOARDVIEW_H
+#define CHESS_SFML_BOARDVIEW_H
 
 
 #include <SFML/Graphics.hpp>
@@ -11,7 +11,7 @@
 #include "ChessHandler.h"
 #include "ResourceHolder.h"
 
-class Board : public sf::Drawable {
+class BoardView : public sf::Drawable {
     ChessHandler handler;
     std::vector<sf::Sprite> figures;
 
@@ -23,13 +23,13 @@ class Board : public sf::Drawable {
     ChessHandler::Field* startField = nullptr;
     ChessHandler::Field* destinationField = nullptr;
 
-    int moved_piece;
+    int movedPiece; //id in figures vector
     float dx = 0, dy = 0;
     bool moving = false;
 
 public:
 
-    Board(int game_id);
+    BoardView(int game_id);
     sf::Vector2i initMousePosition;
 
     void loadPosition();
@@ -38,7 +38,7 @@ public:
 
     bool isMove() { return moving; }
     void onMove() {
-        figures[moved_piece].setPosition(sf::Vector2f(initMousePosition.x, initMousePosition.y) + sf::Vector2f(dx, dy));
+        figures[movedPiece].setPosition(sf::Vector2f(initMousePosition.x, initMousePosition.y) + sf::Vector2f(dx, dy));
     }
 
 private:
@@ -105,4 +105,4 @@ private:
 };
 
 
-#endif //CHESS_SFML_BOARD_H
+#endif //CHESS_SFML_BOARDVIEW_H

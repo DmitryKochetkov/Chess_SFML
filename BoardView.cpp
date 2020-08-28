@@ -3,9 +3,9 @@
 //
 
 #include <SFML/Window/Event.hpp>
-#include "Board.h"
+#include "BoardView.h"
 
-Board::Board(int game_id): table(game_id, &handler) {
+BoardView::BoardView(int game_id): table(game_id, &handler) {
     figures = std::vector<sf::Sprite>();
     t_background.loadFromFile("../board.png");
     t_pieces.loadFromFile("../pieces_resized.png");
@@ -14,7 +14,7 @@ Board::Board(int game_id): table(game_id, &handler) {
     loadPosition();
 }
 
-void Board::loadPosition() {
+void BoardView::loadPosition() {
     figures.clear();
     int k = 0;
     for (int i = 0; i < 8; i++)
@@ -31,49 +31,54 @@ void Board::loadPosition() {
         }
 }
 
-//void Board::onMouseButtonPressed(sf::Vector2i mouse_position) {
-void Board::onMouseButtonPressed(sf::RenderWindow* window) {
+//void BoardView::onMouseButtonPressed(sf::Vector2i mouse_position) {
+void BoardView::onMouseButtonPressed(sf::RenderWindow* window) {
+    startField = nullptr;
+    destinationField = nullptr;
+
     for (int i = 0; i < 32; i++) {
         if (figures[i].getGlobalBounds().contains(initMousePosition.x, initMousePosition.y)) {
-            moving = true; moved_piece = i;
+            moving = true; movedPiece = i;
             window->draw(figures[i]); //TODO: перерисовка, чтобы двигаемая фигура была сверх
             dx = figures[i].getPosition().x - sf::Mouse::getPosition(*window).x;
             dy = figures[i].getPosition().y - sf::Mouse::getPosition(*window).y;
 
-            int startRow = (int) (figures[moved_piece].getPosition().x / field_size);
-            int startColumn = 7 - (int) (figures[moved_piece].getPosition().y / field_size);
+            int startRow = (int) (figures[movedPiece].getPosition().x / field_size);
+            int startColumn = 7 - (int) (figures[movedPiece].getPosition().y / field_size);
             try {
                 startField = new ChessHandler::Field(startRow, startColumn);
             }
             catch (std::runtime_error& e) {
                 startField = nullptr;
+                loadPosition();
             }
 
         }
     }
 }
 
-void Board::onLeftMouseButtonReleased() {
+void BoardView::onLeftMouseButtonReleased() {
     moving = false;
 
-    sf::Vector2f p = figures[moved_piece].getPosition() + sf::Vector2f(field_size/2 - border, field_size/2 - border);
-    sf::Vector2f newPosition = sf::Vector2f(field_size*int(p.x/field_size) + border, field_size*int(p.y/field_size) + border);
+    sf::Vector2f startPosition = figures[movedPiece].getPosition() + sf::Vector2f(field_size / 2 - border, field_size / 2 - border);
+    sf::Vector2f destinationPosition = sf::Vector2f(field_size * int(startPosition.x / field_size) + border, field_size * int(startPosition.y / field_size) + border);
 
-    int destinationRow = (int) (newPosition.x / field_size);
-    int destinationColumn = 7 - (int) (newPosition.y / field_size);
+    int destinationRow = (int) (destinationPosition.x / field_size);
+    int destinationColumn = 7 - (int) (destinationPosition.y / field_size);
     try {
         destinationField = new ChessHandler::Field(destinationRow, destinationColumn);
     }
     catch (std::runtime_error& e) {
+        destinationField = nullptr;
         loadPosition();
         return;
     }
 
     std::cout << (handler.isWhiteToMove() ? "White" : "Black") << " are trying move " << startField->toString() << destinationField->toString() << std::endl;
-    std::cout << "Moved piece " << moved_piece << std::endl << std::endl;
+    std::cout << "Moved piece " << movedPiece << std::endl << std::endl;
 
     // if (game.move(move))
-    //     board[moved_piece].setPosition(newPosition);
+    //     board[movedPiece].setPosition(destinationPosition);
 
     const ChessHandler::Move* handled_move = handler.move(*startField, *destinationField);
     if (handled_move == nullptr) {
@@ -89,7 +94,7 @@ void Board::onLeftMouseButtonReleased() {
         std::cout << "Performed move " << handled_move->toChessNotation() << std::endl;
 
     loadPosition();
-    std::cout << moved_piece << std::endl;
+    std::cout << movedPiece << std::endl;
 
     handler.print();
     std::cout << handler.getHistoryString() << std::endl;

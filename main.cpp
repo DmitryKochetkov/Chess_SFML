@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "Group.h"
-#include "Board.h"
+#include "BoardView.h"
 #include "ResourceHolder.h"
 #include "Label.h"
 #include <string>
@@ -23,17 +23,17 @@ int main() {
 
     Group game_session;
 
-    Board board(1);
+    BoardView boardView(1);
     sf::RectangleShape background(sf::Vector2f(754, 504));
     background.setFillColor(sf::Color(255, 255, 255, 255));
 
     game_session.push_back(background);
-    game_session.push_back(board);
+    game_session.push_back(boardView);
 
     while (window->isOpen())
     {
         sf::Event event;
-        board.initMousePosition = sf::Mouse::getPosition(*window);
+        boardView.initMousePosition = sf::Mouse::getPosition(*window);
         while (window->pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
@@ -44,14 +44,14 @@ int main() {
             //drag and drop
             //TODO: use IListener for handling this events (after merge)
             if (event.type == sf::Event::MouseButtonPressed && event.key.code == sf::Mouse::Left)
-                board.onMouseButtonPressed(window);
+                boardView.onMouseButtonPressed(window);
 
             if (event.type == sf::Event::MouseButtonReleased && event.key.code == sf::Mouse::Left)
-                board.onLeftMouseButtonReleased();
+                boardView.onLeftMouseButtonReleased();
         }
         //TODO: custom event
-        if (board.isMove())
-            board.onMove();
+        if (boardView.isMove())
+            boardView.onMove();
 
         window->clear();
         window->draw(game_session);
