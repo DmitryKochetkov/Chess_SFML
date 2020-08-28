@@ -43,3 +43,7 @@ void CheckBox::handleEvent(sf::Event event) {
         }
     }
 }
+
+bool CheckBox::isChecked() const {
+    return checked;
+}

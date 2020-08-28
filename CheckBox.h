@@ -23,6 +23,8 @@ public:
         return body.getGlobalBounds().contains(point.x, point.y) || text.getGlobalBounds().contains(point.x, point.y);
     }
     void handleEvent(sf::Event event) override;
+
+    bool isChecked() const;
 };
 
 
