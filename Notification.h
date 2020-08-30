@@ -14,7 +14,7 @@ private:
 
     sf::Clock clock;
     void setTransparent(bool transparent);
-
+    bool active = true;
 
 public:
     enum NotificationType {
@@ -28,9 +28,19 @@ public:
         if (clock.getElapsedTime().asMilliseconds() > 3000)
             setTransparent(true);
         else setTransparent(false);
+
+        if (clock.getElapsedTime().asMilliseconds() > 10000)
+            this->active = false;
     }
 
     void handleEvent(sf::Event event) override;
+
+    void activate() {
+        active = true;
+        clock.restart();
+    }
+
+    bool isActive() const;
 };
 
 

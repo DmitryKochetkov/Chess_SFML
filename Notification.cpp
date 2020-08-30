@@ -76,3 +76,7 @@ void Notification::handleEvent(sf::Event event) {
             clock.restart();
         }
 }
+
+bool Notification::isActive() const {
+    return active;
+}
