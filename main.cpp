@@ -53,11 +53,11 @@ int main() {
 
     Button start((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Начать игру");
 
-    NotificationManager notificationManager;
+    //NotificationManager notificationManager;
     Notification notification1(Notification::NotificationType::ERROR, L"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla auctor volutpat tristique. Nulla pretium semper lacus nec porttitor. Nam dignissim massa tellus. Morbi molestie orci ligula. Etiam enim magna, molestie et euismod id, sodales eu sem. Fusce gravida tortor id pharetra condimentum. Vivamus tincidunt ligula et dolor tincidunt faucibus. Integer sed feugiat diam. Praesent commodo eleifend laoreet. Aenean sed odio ultrices, porta dui non, blandit libero. Morbi pulvinar non magna quis ornare. Mauris sit amet massa et sem eleifend faucibus. Proin eget arcu dignissim augue fermentum semper. Pellentesque sit amet pulvinar eros, et fermentum sem. Nunc suscipit erat facilisis sem commodo bibendum ac lobortis arcu.");
     Notification notification2(Notification::NotificationType::INFO, L"Lorem");
-    notificationManager.addNotification(notification1);
-    notificationManager.addNotification(notification2);
+    NotificationManager::Instance().addNotification(notification1);
+    NotificationManager::Instance().addNotification(notification2);
 
     menu->push_back(start);
     menu->push_back(settings_icon);
@@ -67,8 +67,8 @@ int main() {
 
     while (window.isOpen())
     {
-        notificationManager.refresh();
-        Notification* currentNotification = notificationManager.getCurrentNotification();
+        NotificationManager::Instance().refresh();
+        Notification* currentNotification = NotificationManager::Instance().getCurrentNotification();
 
 
         sf::Event event;

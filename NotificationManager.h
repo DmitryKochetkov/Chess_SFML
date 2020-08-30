@@ -7,15 +7,25 @@
 #include "Notification.h"
 
 class NotificationManager {
+private:
+    NotificationManager() = default;
+    NotificationManager& operator=(const NotificationManager&) = delete;
+
     std::queue<std::unique_ptr<Notification>> pending;
 
 public:
+    NotificationManager(const NotificationManager&) = delete;
+
+    static NotificationManager& Instance() {
+        static NotificationManager _instance;
+        return _instance;
+    }
 
     void addNotification(Notification notification) {
         pending.push(std::make_unique<Notification>(notification));
     }
 
-    Notification* getCurrentNotification() {
+    Notification* getCurrentNotification() const {
         if (pending.empty())
             return nullptr;
         return pending.front().get();
