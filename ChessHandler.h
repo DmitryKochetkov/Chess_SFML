@@ -33,8 +33,8 @@ public:
 
         std::string toString() const {
             char f[2];
-            f[0] = 'a' + row;
-            f[1] = '1' + column;
+            f[0] = 'a' + column;
+            f[1] = '1' + row;
             return std::string(f);
         }
     };
@@ -218,10 +218,10 @@ private:
         circles.clear();
     }
 
-    void addLight(int j, int i) {
+    void addLight(int row, int col) {
         sf::CircleShape circle(56/2);
-        circle.setFillColor(sf::Color(255, 210, 210));
-        circle.setPosition( (504 - 56 * 8) / 2 + 56 * i, (504 - 56 * 8) / 2 + 56 * j);
+        circle.setFillColor(sf::Color(255, 210, 210, 200));
+        circle.setPosition( (504 - 56 * 8) / 2 + 56 * col, (504 - 56 * 8) / 2 + 56 * (7 - row));
         circles.push_back(circle);
     }
 

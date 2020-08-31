@@ -31,7 +31,7 @@ void BoardView::loadPosition() {
         }
 }
 
-//void BoardView::onMouseButtonPressed(sf::Vector2i mouse_position) {
+
 void BoardView::onMouseButtonPressed(sf::RenderWindow* window) {
     startField = nullptr;
     destinationField = nullptr;
@@ -43,12 +43,12 @@ void BoardView::onMouseButtonPressed(sf::RenderWindow* window) {
             dx = figures[i].getPosition().x - sf::Mouse::getPosition(*window).x;
             dy = figures[i].getPosition().y - sf::Mouse::getPosition(*window).y;
 
-            int startRow = (int) (figures[movedPiece].getPosition().x / field_size);
-            int startColumn = 7 - (int) (figures[movedPiece].getPosition().y / field_size);
+            int startColumn = (int) (figures[movedPiece].getPosition().x / field_size);
+            int startRow = 7 - (int) (figures[movedPiece].getPosition().y / field_size);
             try {
                 startField = new ChessHandler::Field(startRow, startColumn);
             }
-            catch (std::runtime_error& e) {
+            catch (std::runtime_error& e) { //TODO: custom exception
                 startField = nullptr;
                 loadPosition();
             }
@@ -63,16 +63,19 @@ void BoardView::onLeftMouseButtonReleased() {
     sf::Vector2f startPosition = figures[movedPiece].getPosition() + sf::Vector2f(field_size / 2 - border, field_size / 2 - border);
     sf::Vector2f destinationPosition = sf::Vector2f(field_size * int(startPosition.x / field_size) + border, field_size * int(startPosition.y / field_size) + border);
 
-    int destinationRow = (int) (destinationPosition.x / field_size);
-    int destinationColumn = 7 - (int) (destinationPosition.y / field_size);
+    int destinationColumn = (int) (destinationPosition.x / field_size);
+    int destinationRow = 7 - (int) (destinationPosition.y / field_size);
     try {
         destinationField = new ChessHandler::Field(destinationRow, destinationColumn);
     }
-    catch (std::runtime_error& e) {
+    catch (std::runtime_error& e) { //TODO: custom exception
         destinationField = nullptr;
         loadPosition();
         return;
     }
+
+    if (startField == nullptr || destinationField == nullptr)
+        return;
 
     std::cout << (handler.isWhiteToMove() ? "White" : "Black") << " are trying move " << startField->toString() << destinationField->toString() << std::endl;
     std::cout << "Moved piece " << movedPiece << std::endl << std::endl;

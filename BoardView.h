@@ -42,7 +42,7 @@ public:
     }
 
 private:
-    class Table: public sf::Drawable {
+    class GameTable: public sf::Drawable {
     private:
         sf::Font font;
         sf::Text game_name;
@@ -51,7 +51,7 @@ private:
         ChessHandler* handler;
 
     public:
-        Table(int game_id, ChessHandler* handler) {
+        GameTable(int game_id, ChessHandler* handler) {
             this->handler = handler;
             font = ResourceHolder::Instance().getFont("PT Sans");
             //font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf");
@@ -91,7 +91,7 @@ private:
         }
     };
 
-    Table table;
+    GameTable table;
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         sf::Sprite background(t_background);
