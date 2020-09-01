@@ -7,6 +7,7 @@
 #include "ResourceHolder.h"
 #include "Button.h"
 #include <string>
+#include "MainMenu.h"
 
 using namespace sf;
 
@@ -38,6 +39,9 @@ int main() {
     Group* auth = new Group();
     Group* menu = new Group();
 
+    //
+    MainMenu menu1;
+    auth->push_back(menu1);
     Button form((sf::Vector2f(window.getSize().y * 0.5f - 100, 50)), L"А тут форма входа");
     Button login((sf::Vector2f(window.getSize().y * 0.5f - 100, 150)), L"Войти");
     Button signup((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Регистрация");
@@ -49,7 +53,7 @@ int main() {
     auth->push_back(signup);
     auth->push_back(settings_icon);
     auth->push_back(label);
-
+    
     Button start((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Начать игру");
 
     menu->push_back(start);

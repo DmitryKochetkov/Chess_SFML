@@ -17,9 +17,10 @@ class MainMenu : public sf::Drawable , public IListener {
 	sf::Text icon_text;
 	sf::Text remove_icon_text;
 
-	const sf::Color FillColor = sf::Color(0 , 0 , 48); //Gray
+	const sf::Color FillColor = sf::Color(105 , 105 , 105); //Gray
 	const sf::Color BorderColor = sf::Color::Black;
-	const sf::Color BorderColorHover = sf::Color(0, 0, 80);
+	const sf::Color BorderColorHover = sf::Color(0, 0, 0);
+	const sf::Color TextColor = sf::Color::Black;
 
 public:
 	MainMenu::MainMenu();
