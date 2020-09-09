@@ -173,21 +173,25 @@ private:
         return i >= 0 && i < 8;
     }
 
-    //check there is nothing on the way to destination
-    bool way_is_free(int i1, int j1, int i2, int j2) {
-        if (i1 == i2) {
-            for (int j = j1 + (j2 > j1 ? 1: -1); j != j2; j < j2 ? j++ : j--)
-                if (position[j][i1] != 0)
+    //check there is nothing on the way between two fields (exclusive!!!)
+    bool way_is_free(int position1[8][8], int col1, int row1, int col2, int row2) {
+        if (col1 == col2) {
+            if (abs(row1 - row2) <= 1)
+                return true;
+            for (int j = row1 + (row2 > row1 ? 1 : -1); j != row2 + (row2 > row1 ? -1 : 1); j < row2 ? j++ : j--)
+                if (position1[j][col1] != 0)
                     return false;
         }
-        else if (j1 == j2) {
-            for (int i = i1 + (i2 > i1 ? 1: -1); i != i2; i < i2 ? i++ : i--)
-                if (position[j1][i] != 0)
+        else if (row1 == row2) {
+            if (abs(col1 - col2) <= 1)
+                return true;
+            for (int i = col1 + (col2 > col1 ? 1 : -1); i != col2 + (col2 > col1 ? -1 : 1); i < col2 ? i++ : i--)
+                if (position1[row1][i] != 0)
                     return false;
         }
         else
-        for (int i = i1 + (i2 > i1 ? 1: -1), j = j1 + (j2 > j1 ? 1: -1); i != i2 && j != j2; i < i2 ? i++ : i--, j < j2 ? j++: j--) {
-            if (position[j][i] != 0)
+        for (int i = col1 + (col2 > col1 ? 1 : -1), j = row1 + (row2 > row1 ? 1 : -1); i != col2 + (col2 > col1 ? -1 : 1) && j != row2 + (row2 > row1 ? -1 : 1); i < col2 ? i++ : i--, j < row2 ? j++ : j--) {
+            if (position1[j][i] != 0)
                 return false;
         }
 
