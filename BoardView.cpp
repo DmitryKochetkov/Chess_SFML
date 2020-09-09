@@ -36,7 +36,7 @@ void BoardView::onMouseButtonPressed(sf::RenderWindow* window) {
     startField = nullptr;
     destinationField = nullptr;
 
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < figures.size(); i++) {
         if (figures[i].getGlobalBounds().contains(initMousePosition.x, initMousePosition.y)) {
             moving = true; movedPiece = i;
             window->draw(figures[i]); //TODO: перерисовка, чтобы двигаемая фигура была сверх
