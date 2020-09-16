@@ -174,26 +174,56 @@ private:
     }
 
     //check there is nothing on the way between two fields (exclusive!!!)
+//    bool way_is_free(int position1[8][8], int col1, int row1, int col2, int row2) {
+//        if (col1 == col2) {
+//            if (abs(row1 - row2) <= 1)
+//                return true;
+//            for (int j = row1 + (row2 > row1 ? 1 : -1); j != row2 + (row2 > row1 ? -1 : 1); j < row2 ? j++ : j--)
+//                if (position1[j][col1] != 0)
+//                    return false;
+//        }
+//        else if (row1 == row2) {
+//            if (abs(col1 - col2) <= 1)
+//                return true;
+//            for (int i = col1 + (col2 > col1 ? 1 : -1); i != col2 + (col2 > col1 ? -1 : 1); i < col2 ? i++ : i--)
+//                if (position1[row1][i] != 0)
+//                    return false;
+//        }
+//        else
+//        for (int i = col1 + (col2 > col1 ? 1 : -1), j = row1 + (row2 > row1 ? 1 : -1); i != col2 + (col2 > col1 ? -1 : 1) && j != row2 + (row2 > row1 ? -1 : 1) && onBoard(i) && onBoard(j); i < col2 ? i++ : i--, j < row2 ? j++ : j--) {
+//            if (position1[j][i] != 0)
+//                return false;
+//        }
+//
+//        return true;
+//    }
+
     bool way_is_free(int position1[8][8], int col1, int row1, int col2, int row2) {
+        if (col1 > col2)
+            std::swap(col1, col2);
+
+        if (row1 > row2)
+            std::swap(row1, row2);
+
         if (col1 == col2) {
             if (abs(row1 - row2) <= 1)
                 return true;
-            for (int j = row1 + (row2 > row1 ? 1 : -1); j != row2 + (row2 > row1 ? -1 : 1); j < row2 ? j++ : j--)
+            for (int j = row1 + 1; j != row2; j++)
                 if (position1[j][col1] != 0)
                     return false;
         }
         else if (row1 == row2) {
             if (abs(col1 - col2) <= 1)
                 return true;
-            for (int i = col1 + (col2 > col1 ? 1 : -1); i != col2 + (col2 > col1 ? -1 : 1); i < col2 ? i++ : i--)
+            for (int i = col1 + 1; i != col2; i++)
                 if (position1[row1][i] != 0)
                     return false;
         }
         else
-        for (int i = col1 + (col2 > col1 ? 1 : -1), j = row1 + (row2 > row1 ? 1 : -1); i != col2 + (col2 > col1 ? -1 : 1) && j != row2 + (row2 > row1 ? -1 : 1); i < col2 ? i++ : i--, j < row2 ? j++ : j--) {
-            if (position1[j][i] != 0)
-                return false;
-        }
+            for (int i = col1 + 1, j = row1 + 1; i != col2 && j != row2 && onBoard(i) && onBoard(j); i < col2 ? i++ : i--, j < row2 ? j++ : j--) {
+                if (position1[j][i] != 0)
+                    return false;
+            }
 
         return true;
     }
