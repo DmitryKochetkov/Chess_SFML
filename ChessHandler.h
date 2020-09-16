@@ -158,7 +158,18 @@ private:
     bool BlackCanCastleKingside = true;
     bool BlackCanCastleQueenside = true;
 
-    int position[8][8] = {
+    int testCheckPosition[8][8] = {
+        {-5, 0, 0, 0, 0, 0, -3, -4},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, -1, 0, 1, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {4, 2, 0, 0, 0, 0, 0, 5},
+    };
+
+    int standardPosition[8][8] = {
         {5, 4, 3, 2, 1, 3, 4, 5},
         {6, 6, 6, 6, 6, 6, 6, 6},
         {0, 0, 0, 0, 0, 0, 0, 0},
@@ -168,6 +179,18 @@ private:
         {-6, -6, -6, -6, -6, -6, -6, -6},
         {-5, -4, -3, -2, -1, -3, -4, -5}
     };
+
+    int position[8][8];
+
+public:
+    ChessHandler() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++)
+                position[i][j] = testCheckPosition[i][j];
+        }
+    }
+
+private:
 
     bool onBoard(int i) {
         return i >= 0 && i < 8;
