@@ -77,7 +77,7 @@ void BoardView::onLeftMouseButtonReleased() {
     if (startField == nullptr || destinationField == nullptr)
         return;
 
-    std::cout << (handler.isWhiteToMove() ? "White" : "Black") << " are trying move " << startField->toString() << destinationField->toString() << std::endl;
+    std::cout << (handler.getSideToMove() == ChessHandler::WHITE ? "White" : "Black") << " are trying move " << startField->toString() << destinationField->toString() << std::endl;
     std::cout << "Moved piece " << movedPiece << std::endl << std::endl;
 
     // if (game.move(move))
@@ -89,7 +89,7 @@ void BoardView::onLeftMouseButtonReleased() {
     }
     if (handled_move != nullptr) {
         std::string title = "ChessSFML (";
-        title += (handler.isWhiteToMove() ? "White to move" : "Black to move");
+        title += (handler.getSideToMove() == ChessHandler::WHITE ? "White to move" : "Black to move");
         title += ")";
         //window.setTitle(title);
     }

@@ -153,9 +153,14 @@ public:
         }
     };
 
+    enum Side {
+        WHITE,
+        BLACK
+    };
+
 private:
     std::vector<const Move*> history;
-    bool WhiteToMove = true;
+    Side toMove = WHITE;
 
     bool WhiteCanCastleKingside = true;
     bool WhiteCanCastleQueenside = true;
@@ -316,11 +321,6 @@ private:
         std::cout << std::endl;
     }
 
-    enum Side {
-        WHITE,
-        BLACK
-    };
-
     bool kingChecked(int position1[8][8], Side side) {
         Field* field;
         if (side == WHITE)
@@ -393,7 +393,7 @@ private:
         if (!history.empty() && history.back()->isMate())
             return nullptr;
 
-        if (position[row1][col1] > 0 != WhiteToMove || position[row1][col1] == 0 || position[row1][col1] * position[row2][col2] > 0)
+        if (position[row1][col1] > 0 != (toMove == WHITE) || position[row1][col1] == 0 || position[row1][col1] * position[row2][col2] > 0)
             return nullptr;
 
         if (abs(position[row2][col2]) == 1) //короля нельзя съесть
@@ -401,19 +401,19 @@ private:
 
         //TODO: check rook is near
         bool KingCastlingCorrect =
-                (col1 == 4 && row1 == WhiteToMove ? 0 : 7) //start position is ok
+                (col1 == 4 && row1 == (toMove == WHITE) ? 0 : 7) //start position is ok
                 && row2 == row1 //horizontal moving
                 && (
-                        ((col2 == 6) && (WhiteToMove ? WhiteCanCastleKingside : BlackCanCastleKingside)) ||
-                        ((col2 == 2) && (WhiteToMove ? WhiteCanCastleQueenside : BlackCanCastleQueenside))); //check color and ability to castle
+                        ((col2 == 6) && ((toMove == WHITE) ? WhiteCanCastleKingside : BlackCanCastleKingside)) ||
+                        ((col2 == 2) && ((toMove == WHITE) ? WhiteCanCastleQueenside : BlackCanCastleQueenside))); //check color and ability to castle
         bool KingCorrect = (abs(row2 - row1) <= 1 && abs(col2 - col1) <= 1) || KingCastlingCorrect;
         bool BishopCorrect = (abs(row2 - row1) == abs(col2 - col1));
         bool KnightCorrect = ((abs(row2 - row1) == 2 && abs(col2 - col1) == 1) || (abs(col2 - col1) == 2 && abs(row2 - row1) == 1));
         bool RookCorrect = (row2 == row1 || col2 == col1);
-        bool PawnCorrect = ((col2 == col1) && position[row2][col2] == 0 && (row2 == row1 + (WhiteToMove ? 1 : -1))) ||
-                           ((abs(col2 - col1) == 1) && position[row2][col2] != 0 && (row2 == row1 + (WhiteToMove ? 1 : -1))) ||
-                           ((col2 == col1) && (row1 == WhiteToMove ? 1 : 5) && (position[row2][col2] == 0) && ((row2 == row1 + (WhiteToMove ? 1 : -1)) || ((row2 == row1 + (WhiteToMove ? 2 : -2)) && way_is_free(position, col1, row1, col2, row2)))) ||
-                           ((row1 == (WhiteToMove ? 4 : 3) && abs(getLastMove()->getPiece()) == 6 && getLastMove()->getStart().getRow() == (WhiteToMove ? 6 : 1) && abs(getLastMove()->getDestination().getRow() - getLastMove()->getStart().getRow() == 2) && (col2 == getLastMove()->getDestination().getColumn()) && (row2 == getLastMove()->getStart().getRow() + (WhiteToMove ? -1 : 1)))); //взятие на проходе
+        bool PawnCorrect = ((col2 == col1) && position[row2][col2] == 0 && (row2 == row1 + ((toMove == WHITE) ? 1 : -1))) ||
+                           ((abs(col2 - col1) == 1) && position[row2][col2] != 0 && (row2 == row1 + ((toMove == WHITE) ? 1 : -1))) ||
+                           ((col2 == col1) && (row1 == (toMove == WHITE) ? 1 : 5) && (position[row2][col2] == 0) && ((row2 == row1 + ((toMove == WHITE) ? 1 : -1)) || ((row2 == row1 + ((toMove == WHITE) ? 2 : -2)) && way_is_free(position, col1, row1, col2, row2)))) ||
+                           ((row1 == ((toMove == WHITE) ? 4 : 3) && abs(getLastMove()->getPiece()) == 6 && getLastMove()->getStart().getRow() == ((toMove == WHITE) ? 6 : 1) && abs(getLastMove()->getDestination().getRow() - getLastMove()->getStart().getRow() == 2) && (col2 == getLastMove()->getDestination().getColumn()) && (row2 == getLastMove()->getStart().getRow() + ((toMove == WHITE) ? -1 : 1)))); //взятие на проходе
 
         bool QueenCorrect = BishopCorrect ^ RookCorrect;
 
@@ -425,7 +425,7 @@ private:
 
             //move out of switch?
             if (KingCastlingCorrect) {
-                if (WhiteToMove) {
+                if (toMove == WHITE) {
                     WhiteCanCastleKingside = false;
                     WhiteCanCastleQueenside = false;
                 }
@@ -452,7 +452,7 @@ private:
                     history.push_back(result);
                 }
 
-                WhiteToMove = !WhiteToMove;
+                finishMove();
                 return result;
             }
 
@@ -522,7 +522,7 @@ private:
         positionAfterMove[row2][col2] = position[row1][col1];
         positionAfterMove[row1][col1] = 0;
 
-        if (isWhiteToMove()) {
+        if (toMove == WHITE) {
             if (kingChecked(positionAfterMove, WHITE))
                 return nullptr;
             if (kingChecked(positionAfterMove, BLACK))
@@ -543,7 +543,7 @@ private:
 
         position[row2][col2] = position[row1][col1];
         position[row1][col1] = 0;
-        WhiteToMove = !WhiteToMove;
+        finishMove();
 
         return getLastMove();
     }
@@ -557,8 +557,13 @@ private:
         return move(m);
     }
 
+    void finishMove() {
+        if (toMove == WHITE)
+            toMove = BLACK;
+        else toMove = WHITE;
+    }
 
-    bool isWhiteToMove() const {return WhiteToMove;}
+    Side getSideToMove() const {return toMove;}
     int getCell(int row, int column) {return position[row][column];}
     //Move getMove(int id) { return history.at(id); }
     const Move* getLastMove() { if (history.empty()) return nullptr; return history.back(); }
