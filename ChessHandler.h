@@ -158,6 +158,160 @@ public:
         BLACK
     };
 
+    class Position {
+    private:
+        int position[8][8];
+        bool whiteCanCastleKingside;
+        bool whiteCanCastleQueenside;
+        bool blackCanCastleKingside;
+        bool blackCanCastleQueenside;
+
+    public:
+
+        Position(int position[8][8], bool whiteCanCastle, bool blackCanCastle) {
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++)
+                    this->position[i][j] = position[i][j];
+            }
+
+            //TODO: проверить наличие соответствующей ладьи
+            whiteCanCastleKingside = whiteCanCastle;
+            whiteCanCastleQueenside = whiteCanCastle;
+            blackCanCastleKingside = blackCanCastle;
+            blackCanCastleQueenside = blackCanCastle;
+        }
+
+        bool onBoard(int i) {
+            return i >= 0 && i < 8;
+        }
+
+        //check there is nothing on the way between two fields (exclusive!!!)
+//    bool way_is_free(int position1[8][8], int col1, int row1, int col2, int row2) {
+//        if (col1 == col2) {
+//            if (abs(row1 - row2) <= 1)
+//                return true;
+//            for (int j = row1 + (row2 > row1 ? 1 : -1); j != row2 + (row2 > row1 ? -1 : 1); j < row2 ? j++ : j--)
+//                if (position1[j][col1] != 0)
+//                    return false;
+//        }
+//        else if (row1 == row2) {
+//            if (abs(col1 - col2) <= 1)
+//                return true;
+//            for (int i = col1 + (col2 > col1 ? 1 : -1); i != col2 + (col2 > col1 ? -1 : 1); i < col2 ? i++ : i--)
+//                if (position1[row1][i] != 0)
+//                    return false;
+//        }
+//        else
+//        for (int i = col1 + (col2 > col1 ? 1 : -1), j = row1 + (row2 > row1 ? 1 : -1); i != col2 + (col2 > col1 ? -1 : 1) && j != row2 + (row2 > row1 ? -1 : 1) && onBoard(i) && onBoard(j); i < col2 ? i++ : i--, j < row2 ? j++ : j--) {
+//            if (position1[j][i] != 0)
+//                return false;
+//        }
+//
+//        return true;
+//    }
+
+        bool way_is_free(int col1, int row1, int col2, int row2) {
+            if (col1 > col2)
+                std::swap(col1, col2);
+
+            if (row1 > row2)
+                std::swap(row1, row2);
+
+            if (col1 == col2) {
+                if (abs(row1 - row2) <= 1)
+                    return true;
+                for (int j = row1 + 1; j != row2; j++)
+                    if (position[j][col1] != 0)
+                        return false;
+            }
+            else if (row1 == row2) {
+                if (abs(col1 - col2) <= 1)
+                    return true;
+                for (int i = col1 + 1; i != col2; i++)
+                    if (position[row1][i] != 0)
+                        return false;
+            }
+            else
+                for (int i = col1 + 1, j = row1 + 1; i != col2 && j != row2 && onBoard(i) && onBoard(j); i < col2 ? i++ : i--, j < row2 ? j++ : j--) {
+                    if (position[j][i] != 0)
+                        return false;
+                }
+
+            return true;
+        }
+
+        Field findKing(Side side) {
+            int key = (side == WHITE ? 1 : -1);
+            for (int i = 0; i < 8; i++)
+                for (int j = 0; j < 8; j++)
+                    if (position[j][i] == key)
+                        return Field(j, i);
+        }
+
+        bool kingChecked(Side side) {
+            Field* field;
+            if (side == WHITE)
+                field = new Field(findKing(WHITE));
+
+            if (side == BLACK)
+                field = new Field(findKing(BLACK));
+
+            int row = field->getRow();
+            int col = field->getColumn();
+            delete field;
+
+            //check king attacked horizontally
+            for (int i = 0; i < 8; i++) {
+                if ((
+                            position[row][i] == (-5 * (side == WHITE ? 1 : -1)) ||
+                            position[row][i] == (-2 * (side == WHITE ? 1 : -1))) && way_is_free(col, row, i, row))
+                    return true;
+            }
+
+            //check king attacked vertically
+            for (int j = 0; j < 8; j++) {
+                if ((
+                            position[j][col] == (-5 * (side == WHITE ? 1 : -1)) ||
+                            position[j][col] == (-2 * (side == WHITE ? 1 : -1))) && way_is_free(col, row, col, j))
+                    return true;
+            }
+
+            //check king attacked diagonally
+            for (int i = col, j = row; i < 8 && j < 8; i++, j++) {
+                if ((
+                            position[j][i] == (-3 * (side == WHITE ? 1 : -1)) ||
+                            position[j][i] == (-2 * (side == WHITE ? 1 : -1))) && way_is_free(col, row, i, j)) {
+                    return true;
+                }
+            }
+
+            // check kings attacked by knights
+            if ((onBoard(row + 2) && onBoard(col + 1) && position[row + 2][col + 1] == 4 * (side == WHITE ? -1 : 1)) ||
+                (onBoard(row + 2) && onBoard(col - 1) && position[row + 2][col - 1] == 4 * (side == WHITE ? -1 : 1)) ||
+                (onBoard(row - 2) && onBoard(col + 1) && position[row - 2][col + 1] == 4 * (side == WHITE ? -1 : 1)) ||
+                (onBoard(row - 2) && onBoard(col - 1) && position[row - 2][col - 1] == 4 * (side == WHITE ? -1 : 1)) ||
+                (onBoard(row + 1) && onBoard(col + 2) && position[row + 1][col + 2] == 4 * (side == WHITE ? -1 : 1)) ||
+                (onBoard(row + 1) && onBoard(col - 2) && position[row + 1][col - 2] == 4 * (side == WHITE ? -1 : 1)) ||
+                (onBoard(row - 1) && onBoard(col + 2) && position[row - 1][col + 2] == 4 * (side == WHITE ? -1 : 1)) ||
+                (onBoard(row - 1) && onBoard(col - 2) && position[row - 1][col - 2] == 4 * (side == WHITE ? -1 : 1)))
+                return true;
+
+            //check opponent's king
+            Field opponent = (side == WHITE ? findKing(BLACK) : findKing(WHITE));
+            if (abs(row - opponent.getRow()) <= 1 && abs(col - opponent.getColumn()) <= 1)
+                return true;
+
+            // TODO: check king attacked by pawns
+            if (position[row + (side == WHITE ? 1 : -1)][col + 1] == (side == WHITE ? -6 : 6))
+                return true;
+
+            return false;
+        }
+
+        int* operator[] (int x) { return position[x]; }
+
+    };
+
 private:
     std::vector<const Move*> history;
     Side toMove = WHITE;
@@ -189,90 +343,11 @@ private:
         {-5, -4, -3, -2, -1, -3, -4, -5}
     };
 
-    int position[8][8];
-
-public:
-    ChessHandler() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++)
-                position[i][j] = testCheckPosition[i][j];
-        }
-    }
+    Position position = Position(testCheckPosition, false, false);
 
 private:
 
-    bool onBoard(int i) {
-        return i >= 0 && i < 8;
-    }
 
-    //check there is nothing on the way between two fields (exclusive!!!)
-//    bool way_is_free(int position1[8][8], int col1, int row1, int col2, int row2) {
-//        if (col1 == col2) {
-//            if (abs(row1 - row2) <= 1)
-//                return true;
-//            for (int j = row1 + (row2 > row1 ? 1 : -1); j != row2 + (row2 > row1 ? -1 : 1); j < row2 ? j++ : j--)
-//                if (position1[j][col1] != 0)
-//                    return false;
-//        }
-//        else if (row1 == row2) {
-//            if (abs(col1 - col2) <= 1)
-//                return true;
-//            for (int i = col1 + (col2 > col1 ? 1 : -1); i != col2 + (col2 > col1 ? -1 : 1); i < col2 ? i++ : i--)
-//                if (position1[row1][i] != 0)
-//                    return false;
-//        }
-//        else
-//        for (int i = col1 + (col2 > col1 ? 1 : -1), j = row1 + (row2 > row1 ? 1 : -1); i != col2 + (col2 > col1 ? -1 : 1) && j != row2 + (row2 > row1 ? -1 : 1) && onBoard(i) && onBoard(j); i < col2 ? i++ : i--, j < row2 ? j++ : j--) {
-//            if (position1[j][i] != 0)
-//                return false;
-//        }
-//
-//        return true;
-//    }
-
-    bool way_is_free(int position1[8][8], int col1, int row1, int col2, int row2) {
-        if (col1 > col2)
-            std::swap(col1, col2);
-
-        if (row1 > row2)
-            std::swap(row1, row2);
-
-        if (col1 == col2) {
-            if (abs(row1 - row2) <= 1)
-                return true;
-            for (int j = row1 + 1; j != row2; j++)
-                if (position1[j][col1] != 0)
-                    return false;
-        }
-        else if (row1 == row2) {
-            if (abs(col1 - col2) <= 1)
-                return true;
-            for (int i = col1 + 1; i != col2; i++)
-                if (position1[row1][i] != 0)
-                    return false;
-        }
-        else
-            for (int i = col1 + 1, j = row1 + 1; i != col2 && j != row2 && onBoard(i) && onBoard(j); i < col2 ? i++ : i--, j < row2 ? j++ : j--) {
-                if (position1[j][i] != 0)
-                    return false;
-            }
-
-        return true;
-    }
-
-    Field findWhiteKing(int positionAfterMove[8][8]) {
-        for (int i = 0; i < 8; i++)
-            for (int j = 0; j < 8; j++)
-                if (positionAfterMove[j][i] == 1)
-                    return Field(j, i);
-    }
-
-    Field findBlackKing(int positionAfterMove[8][8]) {
-        for (int i = 0; i < 8; i++)
-            for (int j = 0; j < 8; j++)
-                if (positionAfterMove[j][i] == -1)
-                    return Field(j, i);
-    }
 
     public:
 
@@ -321,68 +396,6 @@ private:
         std::cout << std::endl;
     }
 
-    bool kingChecked(int position1[8][8], Side side) {
-        Field* field;
-        if (side == WHITE)
-            field = new Field(findWhiteKing(position1));
-
-        if (side == BLACK)
-            field = new Field(findBlackKing(position1));
-
-        int row = field->getRow();
-        int col = field->getColumn();
-        delete field;
-
-        //check king attacked horizontally
-        for (int i = 0; i < 8; i++) {
-            if ((
-                    position1[row][i] == (-5 * (side == WHITE ? 1 : -1)) ||
-                    position1[row][i] == (-2 * (side == WHITE ? 1 : -1))) && way_is_free(position1, col, row, i, row))
-                return true;
-        }
-
-        //check king attacked vertically
-        for (int j = 0; j < 8; j++) {
-            if ((
-                        position1[j][col] == (-5 * (side == WHITE ? 1 : -1)) ||
-                        position1[j][col] == (-2 * (side == WHITE ? 1 : -1))) && way_is_free(position1, col, row, col, j))
-                return true;
-        }
-
-        //check king attacked diagonally
-        for (int i = col, j = row; i < 8 && j < 8; i++, j++) {
-            if ((
-                    position1[j][i] == (-3 * (side == WHITE ? 1 : -1)) ||
-                    position1[j][i] == (-2 * (side == WHITE ? 1 : -1))) && way_is_free(position1, col, row, i, j)) {
-                return true;
-            }
-        }
-
-        // check kings attacked by knights
-        if ((onBoard(row + 2) && onBoard(col + 1) && position1[row + 2][col + 1] == 4 * (side == WHITE ? -1 : 1)) ||
-            (onBoard(row + 2) && onBoard(col - 1) && position1[row + 2][col - 1] == 4 * (side == WHITE ? -1 : 1)) ||
-            (onBoard(row - 2) && onBoard(col + 1) && position1[row - 2][col + 1] == 4 * (side == WHITE ? -1 : 1)) ||
-            (onBoard(row - 2) && onBoard(col - 1) && position1[row - 2][col - 1] == 4 * (side == WHITE ? -1 : 1)) ||
-            (onBoard(row + 1) && onBoard(col + 2) && position1[row + 1][col + 2] == 4 * (side == WHITE ? -1 : 1)) ||
-            (onBoard(row + 1) && onBoard(col - 2) && position1[row + 1][col - 2] == 4 * (side == WHITE ? -1 : 1)) ||
-            (onBoard(row - 1) && onBoard(col + 2) && position1[row - 1][col + 2] == 4 * (side == WHITE ? -1 : 1)) ||
-            (onBoard(row - 1) && onBoard(col - 2) && position1[row - 1][col - 2] == 4 * (side == WHITE ? -1 : 1)))
-            return true;
-
-        //check opponent's king
-        Field opponent = (side == WHITE ? findBlackKing(position1) : findWhiteKing(position1));
-        if (abs(row - opponent.getRow()) <= 1 && abs(col - opponent.getColumn()) <= 1)
-            return true;
-
-        // TODO: check king attacked by pawns
-        if (position1[row + (side == WHITE ? 1 : -1)][col + 1] == (side == WHITE ? -6 : 6))
-            return true;
-        if (position1[row + (side == WHITE ? 1 : -1)][col - 1] == (side == WHITE ? -6 : 6))
-            return true;
-
-        return false;
-    }
-
     const Move* move(char m[4]) {
         Move* result = nullptr;
         int col1 = m[0] - 'a';
@@ -412,7 +425,7 @@ private:
         bool RookCorrect = (row2 == row1 || col2 == col1);
         bool PawnCorrect = ((col2 == col1) && position[row2][col2] == 0 && (row2 == row1 + ((toMove == WHITE) ? 1 : -1))) ||
                            ((abs(col2 - col1) == 1) && position[row2][col2] != 0 && (row2 == row1 + ((toMove == WHITE) ? 1 : -1))) ||
-                           ((col2 == col1) && (row1 == (toMove == WHITE) ? 1 : 5) && (position[row2][col2] == 0) && ((row2 == row1 + ((toMove == WHITE) ? 1 : -1)) || ((row2 == row1 + ((toMove == WHITE) ? 2 : -2)) && way_is_free(position, col1, row1, col2, row2)))) ||
+                           ((col2 == col1) && (row1 == (toMove == WHITE) ? 1 : 5) && (position[row2][col2] == 0) && ((row2 == row1 + ((toMove == WHITE) ? 1 : -1)) || ((row2 == row1 + ((toMove == WHITE) ? 2 : -2)) && position.way_is_free(col1, row1, col2, row2)))) ||
                            ((row1 == ((toMove == WHITE) ? 4 : 3) && abs(getLastMove()->getPiece()) == 6 && getLastMove()->getStart().getRow() == ((toMove == WHITE) ? 6 : 1) && abs(getLastMove()->getDestination().getRow() - getLastMove()->getStart().getRow() == 2) && (col2 == getLastMove()->getDestination().getColumn()) && (row2 == getLastMove()->getStart().getRow() + ((toMove == WHITE) ? -1 : 1)))); //взятие на проходе
 
         bool QueenCorrect = BishopCorrect ^ RookCorrect;
@@ -461,14 +474,14 @@ private:
         case 2:
             if (!QueenCorrect)
                 return nullptr;
-            if (!way_is_free(position, col1, row1, col2, row2))
+            if (!position.way_is_free(col1, row1, col2, row2))
                 return nullptr;
             break;
 
         case 3:
             if (!BishopCorrect)
                 return nullptr;
-            if (!way_is_free(position, col1, row1, col2, row2))
+            if (!position.way_is_free(col1, row1, col2, row2))
                 return nullptr;
 
             break;
@@ -481,7 +494,7 @@ private:
         case 5:
             if (!RookCorrect)
                 return nullptr;
-            if (!way_is_free(position, col1, row1, col2, row2))
+            if (!position.way_is_free(col1, row1, col2, row2))
                 return nullptr;
 
             if (row1 == 0) { //handles the first move of the white rook
@@ -514,25 +527,22 @@ private:
         bool WhiteKingCheck = false; //1
         bool BlackKingCheck = false; //-1
 
-        int positionAfterMove[8][8] = {0};
-        for (int i = 0; i < 8; i++)
-            for (int j = 0; j < 8; j++)
-                positionAfterMove[j][i] = position[j][i];
+        Position afterMove = position;
 
-        positionAfterMove[row2][col2] = position[row1][col1];
-        positionAfterMove[row1][col1] = 0;
+        afterMove[row2][col2] = position[row1][col1];
+        afterMove[row1][col1] = 0;
 
         if (toMove == WHITE) {
-            if (kingChecked(positionAfterMove, WHITE))
+            if (afterMove.kingChecked(WHITE))
                 return nullptr;
-            if (kingChecked(positionAfterMove, BLACK))
+            if (afterMove.kingChecked(BLACK))
                 result->setCheck(true);
             //TODO: check mate
         }
         else {
-            if (kingChecked(positionAfterMove, BLACK))
+            if (afterMove.kingChecked(BLACK))
                 return nullptr;
-            if (kingChecked(positionAfterMove, WHITE))
+            if (afterMove.kingChecked(WHITE))
                 result->setCheck(true);
             //TODO: check mate
         }
