@@ -6,6 +6,8 @@
 #include "Label.h"
 #include "ResourceHolder.h"
 #include "Button.h"
+#include "Notification.h"
+#include "NotificationManager.h"
 #include <string>
 
 using namespace sf;
@@ -48,9 +50,14 @@ int main() {
     auth->push_back(login);
     auth->push_back(signup);
     auth->push_back(settings_icon);
-    auth->push_back(label);
 
     Button start((sf::Vector2f(window.getSize().y * 0.5f - 100, 250)), L"Начать игру");
+
+    //NotificationManager notificationManager;
+    Notification notification1(Notification::NotificationType::ERROR, L"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla auctor volutpat tristique. Nulla pretium semper lacus nec porttitor. Nam dignissim massa tellus. Morbi molestie orci ligula. Etiam enim magna, molestie et euismod id, sodales eu sem. Fusce gravida tortor id pharetra condimentum. Vivamus tincidunt ligula et dolor tincidunt faucibus. Integer sed feugiat diam. Praesent commodo eleifend laoreet. Aenean sed odio ultrices, porta dui non, blandit libero. Morbi pulvinar non magna quis ornare. Mauris sit amet massa et sem eleifend faucibus. Proin eget arcu dignissim augue fermentum semper. Pellentesque sit amet pulvinar eros, et fermentum sem. Nunc suscipit erat facilisis sem commodo bibendum ac lobortis arcu.");
+    Notification notification2(Notification::NotificationType::INFO, L"Lorem");
+    NotificationManager::Instance().addNotification(notification1);
+    NotificationManager::Instance().addNotification(notification2);
 
     menu->push_back(start);
     menu->push_back(settings_icon);
@@ -60,9 +67,15 @@ int main() {
 
     while (window.isOpen())
     {
+        NotificationManager::Instance().refresh();
+        Notification* currentNotification = NotificationManager::Instance().getCurrentNotification();
+
+
         sf::Event event;
         while (window.pollEvent(event))
         {
+            currentNotification->handleEvent(event);
+
             if (event.type == sf::Event::Closed)
                 window.close();
 
@@ -81,6 +94,10 @@ int main() {
         window.clear();
         window.draw(background);
         window.draw(*visible);
+        if (currentNotification != nullptr) {
+            window.draw(*currentNotification);
+            currentNotification->animation();
+        }
         window.display();
     }
 
